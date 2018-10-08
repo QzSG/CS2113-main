@@ -11,8 +11,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import seedu.address.logic.commands.BackupCommand;
-import seedu.address.logic.parser.exceptions.ParseException;
-
 
 //@@author QzSG
 public class BackupCommandParserTest {
@@ -42,5 +40,4 @@ public class BackupCommandParserTest {
                 new BackupCommand(Optional.ofNullable(tempBackupFilePath));
         assertParseSuccess(parser, tempBackupFilePath.toString(), expectedBackupCommand);
     }
-
 }
