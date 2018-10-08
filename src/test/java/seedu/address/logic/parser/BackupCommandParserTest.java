@@ -43,11 +43,4 @@ public class BackupCommandParserTest {
         assertParseSuccess(parser, tempBackupFilePath.toString(), expectedBackupCommand);
     }
 
-    @Test
-    public void parse_invalidArgs_throwsParseException() throws Exception {
-        thrown.expect(ParseException.class);
-        parser.parse("\\ /  /"); //Throws on windows
-        parser.parse("\\0"); //Throws on Linux
-    }
-
 }
