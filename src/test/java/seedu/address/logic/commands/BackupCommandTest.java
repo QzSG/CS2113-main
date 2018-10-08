@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -12,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import org.junit.rules.TemporaryFolder;
+
 import seedu.address.logic.CommandHistory;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
@@ -23,13 +23,11 @@ import seedu.address.model.UserPrefs;
  */
 public class BackupCommandTest {
 
-    private static Path TEST_DATA_FOLDER = Paths.get("src", "test", "data", "BackupCommandTest");
-    private Model model;
-    private Model expectedModel;
-    private CommandHistory commandHistory = new CommandHistory();
-
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
+
+    private Model model;
+    private Model expectedModel;
 
     @Before
     public void setUp() {
@@ -44,11 +42,15 @@ public class BackupCommandTest {
 
     @Test
     public void execute_backupSuccess() {
-        BackupCommand command = new BackupCommand(Optional.ofNullable(model.getUserPrefs().getAddressBookBackupFilePath()));
+        BackupCommand command = new BackupCommand(
+                Optional.ofNullable(model.getUserPrefs().getAddressBookBackupFilePath()));
         BackupCommand expectedCommand = new BackupCommand(
                 Optional.ofNullable(model.getUserPrefs().getAddressBookBackupFilePath()));
         CommandResult result = command.execute(model, new CommandHistory());
         CommandResult expectedResult = expectedCommand.execute(expectedModel, new CommandHistory());
         assertEquals(expectedResult.feedbackToUser, result.feedbackToUser);
     }
+
+
+
 }

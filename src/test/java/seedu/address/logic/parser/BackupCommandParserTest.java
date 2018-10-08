@@ -1,23 +1,24 @@
 package seedu.address.logic.parser;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import seedu.address.logic.commands.BackupCommand;
-import seedu.address.model.UserPrefs;
+import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 
 import java.nio.file.Path;
 import java.util.Optional;
 
-import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import seedu.address.logic.commands.BackupCommand;
+
 
 //@@author QzSG
 public class BackupCommandParserTest {
 
-    private BackupCommandParser parser = new BackupCommandParser();
-
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
+
+    private BackupCommandParser parser = new BackupCommandParser();
 
     @Test
     public void parse_emptyArg_parsesPasses() {

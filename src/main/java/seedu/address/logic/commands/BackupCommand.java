@@ -14,8 +14,6 @@ import seedu.address.model.Model;
  */
 public class BackupCommand extends Command {
 
-    private Optional<Path> backupPath;
-
     public static final String COMMAND_WORD = "backup";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
@@ -24,6 +22,8 @@ public class BackupCommand extends Command {
             + "Example: " + COMMAND_WORD + " data\\addressbook.bak";
 
     public static final String MESSAGE_SUCCESS = "Initiating Backup to %s";
+
+    private Optional<Path> backupPath;
 
     /**
      * Creates an AddCommand to add the specified {@code Person}

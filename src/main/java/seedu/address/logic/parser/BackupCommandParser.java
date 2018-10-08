@@ -1,11 +1,12 @@
 package seedu.address.logic.parser;
 
-import seedu.address.logic.commands.BackupCommand;
-import seedu.address.logic.parser.exceptions.ParseException;
+import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 
 import java.util.Optional;
 
-import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import seedu.address.logic.commands.BackupCommand;
+import seedu.address.logic.parser.exceptions.ParseException;
+
 
 //@@author QzSG
 /**
@@ -23,8 +24,7 @@ public class BackupCommandParser implements Parser<BackupCommand> {
             String backupPathString = args.trim();
             if (backupPathString.isEmpty()) {
                 return new BackupCommand(Optional.empty());
-            }
-            else {
+            } else {
                 return new BackupCommand(ParserUtil.parsePath(backupPathString));
             }
         } catch (ParseException pe) {
