@@ -27,7 +27,7 @@ public class BackupCommandParser implements Parser<BackupCommand> {
             } else {
                 return new BackupCommand(ParserUtil.parsePath(backupPathString));
             }
-        } catch (ParseException pe) {
+        } catch (Exception pe) {
             throw new ParseException(
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, BackupCommand.MESSAGE_USAGE), pe);
         }
