@@ -46,7 +46,7 @@ public class BackupCommandParserTest {
     @Test
     public void parse_invalidArgs_throwsParseException() throws Exception {
         thrown.expect(ParseException.class);
-        parser.parse("/:::::   /");
+        parser.parse("/\\ /\\");
     }
 
 }
