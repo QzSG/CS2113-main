@@ -154,12 +154,6 @@ public class ModelManager extends ComponentManager implements Model {
     //@@author
 
     @Override
-    public void backupAddressBook() {
-        indicateAddressBookBackupRequest();
-    }
-
-
-    @Override
     public boolean equals(Object obj) {
         // short circuit if same object
         if (obj == this) {
