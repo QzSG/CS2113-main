@@ -24,9 +24,9 @@ public class BackupCommandParser implements Parser<BackupCommand> {
      */
     public BackupCommand parse(String args) throws ParseException {
         try {
-            String trimmedArgs  = args.trim();
+            String trimmedArgs = args.trim();
             if (trimmedArgs.isEmpty()) {
-                return new BackupCommand(Optional.empty(), true, Optional.empty(),Optional.empty());
+                return new BackupCommand(Optional.empty(), true, Optional.empty(), Optional.empty());
             } else {
                 return parseArguments(trimmedArgs);
             }
@@ -36,21 +36,22 @@ public class BackupCommandParser implements Parser<BackupCommand> {
         }
     }
 
+    /**
+     * Parses extra arguments given by the user
+     * @param args
+     * @return BackupCommand for execution
+     * @throws ParseException
+     */
     private BackupCommand parseArguments(String args) throws ParseException {
         List<String> argumentList = Arrays.asList(args.split(" ", 0));
-        System.out.println("SIZE  ============ " + argumentList.size());
-        for (String s : argumentList
-             ) {
-            System.out.print(s + ' ');
+        if (argumentList.size() == 1) {
+            return new BackupCommand(ParserUtil.parsePath(argumentList.get(0)), true,
+                    Optional.empty(), Optional.empty());
         }
-        if (argumentList.size() == 1){
-            System.out.println("HERE");
-            return new BackupCommand(ParserUtil.parsePath(argumentList.get(0)), true, Optional.empty(), Optional.empty());
-        }
-        if (argumentList.size() == 2 && argumentList.get(0).toLowerCase().equals("github")){
-            System.out.println("THERE");
+        if (argumentList.size() == 2 && argumentList.get(0).toLowerCase().equals("github")) {
             return new BackupCommand(Optional.empty(), false,
-                    Optional.ofNullable(OnlineStorage.OnlineStorageType.GITHUB), Optional.ofNullable(argumentList.get(1)));
+                    Optional.ofNullable(OnlineStorage.OnlineStorageType.GITHUB),
+                    Optional.ofNullable(argumentList.get(1)));
         }
         throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, BackupCommand.MESSAGE_USAGE));
     }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.logging.Logger;
+import javax.xml.bind.JAXBException;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -19,7 +20,6 @@ import seedu.address.commons.util.XmlUtil;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
 
-import javax.xml.bind.JAXBException;
 
 /**
  * Manages storage of AddressBook data in local storage.
@@ -113,6 +113,10 @@ public class StorageManager extends ComponentManager implements Storage {
     }
 
     // ================ GitHub Storage methods ==============================
+    /*
+        Listens directly to BackupCommand
+     */
+    @SuppressWarnings("unused")
     @Subscribe
     public void handleOnlineBackupEvent(OnlineBackupEvent event) {
         logger.info(LogsCenter.getEventHandlingLogMessage(event, "Saving data to online storage"));
@@ -123,15 +127,26 @@ public class StorageManager extends ComponentManager implements Storage {
         }
     }
 
+    /**
+     * Performs online backup to supported online storage
+     * @param target
+     * @param data
+     * @param fileName
+     * @param authToken
+     * @throws IOException
+     * @throws OnlineBackupFailureException
+     * @throws JAXBException
+     */
     private void backupOnline(OnlineStorage.OnlineStorageType target, ReadOnlyAddressBook data,
                               String fileName, Optional<String> authToken)
             throws IOException, OnlineBackupFailureException, JAXBException {
         switch(target) {
-            case GITHUB:
-                gitHubStorage = new GitHubStorage(authToken.orElseThrow(
-                        () -> new OnlineBackupFailureException("Invalid auth token received")));
-                gitHubStorage.saveContentToStorage(XmlUtil.convertContentToString(
-                        new XmlSerializableAddressBook(data)), fileName, "Address Book Backup");
+        case GITHUB:
+        default:
+            gitHubStorage = new GitHubStorage(
+                    authToken.orElseThrow(() -> new OnlineBackupFailureException("Invalid auth token received")));
+            gitHubStorage.saveContentToStorage(XmlUtil.convertContentToString(
+                new XmlSerializableAddressBook(data)), fileName, "Address Book Backup");
         }
     }
 }

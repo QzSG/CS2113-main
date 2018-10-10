@@ -1,11 +1,10 @@
 package seedu.address.commons.events.storage;
 
+import java.util.Optional;
+
 import seedu.address.commons.events.BaseEvent;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.storage.OnlineStorage;
-
-import java.nio.file.Path;
-import java.util.Optional;
 
 //@@author QzSG
 /** Indicates a request for online backup*/
