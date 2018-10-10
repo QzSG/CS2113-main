@@ -2,10 +2,13 @@ package seedu.address.logic.parser;
 
 import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import seedu.address.logic.commands.BackupCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.storage.OnlineStorage;
 
 
 //@@author QzSG
@@ -21,11 +24,11 @@ public class BackupCommandParser implements Parser<BackupCommand> {
      */
     public BackupCommand parse(String args) throws ParseException {
         try {
-            String backupPathString = args.trim();
-            if (backupPathString.isEmpty()) {
-                return new BackupCommand(Optional.empty());
+            String trimmedArgs  = args.trim();
+            if (trimmedArgs.isEmpty()) {
+                return new BackupCommand(Optional.empty(), true, Optional.empty(),Optional.empty());
             } else {
-                return new BackupCommand(ParserUtil.parsePath(backupPathString));
+                return parseArguments(trimmedArgs);
             }
         } catch (Exception pe) {
             throw new ParseException(
@@ -33,4 +36,22 @@ public class BackupCommandParser implements Parser<BackupCommand> {
         }
     }
 
+    private BackupCommand parseArguments(String args) throws ParseException {
+        List<String> argumentList = Arrays.asList(args.split(" ", 0));
+        System.out.println("SIZE  ============ " + argumentList.size());
+        for (String s : argumentList
+             ) {
+            System.out.print(s + ' ');
+        }
+        if (argumentList.size() == 1){
+            System.out.println("HERE");
+            return new BackupCommand(ParserUtil.parsePath(argumentList.get(0)), true, Optional.empty(), Optional.empty());
+        }
+        if (argumentList.size() == 2 && argumentList.get(0).toLowerCase().equals("github")){
+            System.out.println("THERE");
+            return new BackupCommand(Optional.empty(), false,
+                    Optional.ofNullable(OnlineStorage.OnlineStorageType.GITHUB), Optional.ofNullable(argumentList.get(1)));
+        }
+        throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, BackupCommand.MESSAGE_USAGE));
+    }
 }
