@@ -93,9 +93,15 @@ public interface Model {
     void backupAddressBookLocal(Path backupPath);
 
     /**
-     * Restore address book from storage.
+     * Restore address book from local storage.
      */
-    void restoreAddressBook();
+    void restoreAddressBookLocal(Path backupPath);
+
+    /**
+     * Restore address book from storage.
+     * @param restoredAddressBook
+     */
+    void restoreAddressBook(ReadOnlyAddressBook restoredAddressBook);
 
     //@@author luhan02
     /**

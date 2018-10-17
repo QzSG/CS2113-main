@@ -50,7 +50,7 @@ public class GitHubStorage implements OnlineStorage {
         return ghGistBuilder;
     }
 
-    private String getGistContent(String gistId) throws IOException {
+    public String readContentFromGist(String gistId) throws IOException {
         github_ = GitHub.connectUsingOAuth(authToken);
         GHGist ghGist = github_.getGist(gistId);
         GHGistFile gistFile = ghGist.getFile("AddressBook.bak");

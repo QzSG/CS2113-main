@@ -3,10 +3,13 @@ package seedu.address.model;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
+import com.google.common.eventbus.Subscribe;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -14,10 +17,17 @@ import seedu.address.commons.core.ComponentManager;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.events.model.AddressBookChangedEvent;
 import seedu.address.commons.events.model.AddressBookLocalBackupEvent;
-import seedu.address.commons.events.model.AddressBookLocalRestoreEvent;
+import seedu.address.commons.events.model.AddressBookOnlineRestoreEvent;
+import seedu.address.commons.events.storage.DataRestoreExceptionEvent;
+import seedu.address.commons.events.ui.NewResultAvailableEvent;
+import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.commons.util.XmlUtil;
 import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
 import seedu.address.model.task.Task;
+import seedu.address.storage.XmlSerializableAddressBook;
+
+import javax.xml.bind.JAXBException;
 
 /**
  * Represents the in-memory model of the address book data.
@@ -69,16 +79,16 @@ public class ModelManager extends ComponentManager implements Model {
     }
 
     //@@author QzSG
+    /** Raises an event to indicate the model has changed with custom message*/
+    private void indicateAddressBookChanged(String message) {
+        raise(new AddressBookChangedEvent(versionedAddressBook));
+        raise(new NewResultAvailableEvent(message));
+    }
+
     /** Raises an event to indicate the request to backup model to persistent storage*/
     private void indicateAddressBookBackupRequest(Path backupPath) {
         raise(new AddressBookLocalBackupEvent(versionedAddressBook, backupPath));
     }
-
-    /** Raises an event to indicate the request to restore address book from storage*/
-    private void indicateAddressBookRestoreRequest() {
-        raise(new AddressBookLocalRestoreEvent());
-    }
-
 
     //@@author
 
@@ -162,10 +172,28 @@ public class ModelManager extends ComponentManager implements Model {
     }
 
     @Override
-    public void restoreAddressBook() {
-        indicateAddressBookRestoreRequest();
+    public void restoreAddressBookLocal(Path backupPath) {
+        try {
+            AddressBook restoredAddressBook = XmlUtil.getDataFromFile(backupPath, XmlSerializableAddressBook.class)
+                    .toModelType();
+            restoreAddressBook(restoredAddressBook);
+        } catch (IllegalValueException |JAXBException | FileNotFoundException e) {
+            raise(new DataRestoreExceptionEvent(e));
+        }
     }
 
+    @Override
+    public void restoreAddressBook(ReadOnlyAddressBook restoredAddressBook) {
+        versionedAddressBook.resetData(restoredAddressBook);
+        Platform.runLater( () -> indicateAddressBookChanged("Address Book Data Restored"));
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void handleAddressBookOnlineRestoreEvent(AddressBookOnlineRestoreEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring address book from online storage"));
+        restoreAddressBook(event.data);
+    }
     //@@author
 
     //@@author luhan02
