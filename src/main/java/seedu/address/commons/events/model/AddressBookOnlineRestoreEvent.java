@@ -9,7 +9,7 @@ public class AddressBookOnlineRestoreEvent extends BaseEvent {
 
     public final ReadOnlyAddressBook data;
 
-    public AddressBookOnlineRestoreEvent(ReadOnlyAddressBook data){
+    public AddressBookOnlineRestoreEvent(ReadOnlyAddressBook data) {
         this.data = data;
     }
     @Override

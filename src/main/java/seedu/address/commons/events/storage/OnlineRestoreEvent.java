@@ -1,10 +1,9 @@
 package seedu.address.commons.events.storage;
 
-import seedu.address.commons.events.BaseEvent;
-import seedu.address.model.ReadOnlyAddressBook;
-import seedu.address.storage.OnlineStorage;
-
 import java.util.Optional;
+
+import seedu.address.commons.events.BaseEvent;
+import seedu.address.storage.OnlineStorage;
 
 //@@author QzSG
 

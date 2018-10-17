@@ -50,6 +50,12 @@ public class GitHubStorage implements OnlineStorage {
         return ghGistBuilder;
     }
 
+    /**
+     * Reads content from Gist and returns it as a string
+     * @param gistId
+     * @return
+     * @throws IOException
+     */
     public String readContentFromGist(String gistId) throws IOException {
         github_ = GitHub.connectUsingOAuth(authToken);
         GHGist ghGist = github_.getGist(gistId);

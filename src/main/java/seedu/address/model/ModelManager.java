@@ -7,8 +7,10 @@ import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
+import javax.xml.bind.JAXBException;
 
 import com.google.common.eventbus.Subscribe;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,8 +28,6 @@ import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
 import seedu.address.model.task.Task;
 import seedu.address.storage.XmlSerializableAddressBook;
-
-import javax.xml.bind.JAXBException;
 
 /**
  * Represents the in-memory model of the address book data.
@@ -177,7 +177,7 @@ public class ModelManager extends ComponentManager implements Model {
             AddressBook restoredAddressBook = XmlUtil.getDataFromFile(backupPath, XmlSerializableAddressBook.class)
                     .toModelType();
             restoreAddressBook(restoredAddressBook);
-        } catch (IllegalValueException |JAXBException | FileNotFoundException e) {
+        } catch (IllegalValueException | JAXBException | FileNotFoundException e) {
             raise(new DataRestoreExceptionEvent(e));
         }
     }
@@ -185,7 +185,7 @@ public class ModelManager extends ComponentManager implements Model {
     @Override
     public void restoreAddressBook(ReadOnlyAddressBook restoredAddressBook) {
         versionedAddressBook.resetData(restoredAddressBook);
-        Platform.runLater( () -> indicateAddressBookChanged("Address Book Data Restored"));
+        Platform.runLater(() -> indicateAddressBookChanged("Address Book Data Restored"));
     }
 
     @SuppressWarnings("unused")

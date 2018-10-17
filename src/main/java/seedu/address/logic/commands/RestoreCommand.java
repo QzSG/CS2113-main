@@ -1,18 +1,16 @@
+//@@author QzSG
 package seedu.address.logic.commands;
+
+import static java.util.Objects.requireNonNull;
+
+import java.nio.file.Path;
+import java.util.Optional;
 
 import seedu.address.commons.core.EventsCenter;
 import seedu.address.commons.events.storage.OnlineRestoreEvent;
 import seedu.address.logic.CommandHistory;
 import seedu.address.model.Model;
-//import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.storage.OnlineStorage;
-
-import java.nio.file.Path;
-import java.util.Optional;
-
-import static java.util.Objects.requireNonNull;
-
-//@@author QzSG
 
 /**
  * Lists all persons in the address book to the user.
@@ -22,7 +20,8 @@ public class RestoreCommand extends Command {
     public static final String COMMAND_WORD = "restore";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Restore student planner data from location specified (restores from default backup data path if not provided)\n"
+            + ": Restore student planner data from location specified "
+            + "(restores from default backup data path if not provided)\n"
             + "Parameters: [github authToken] OR [PATH] (must be a writable path)\n"
             + "Example: " + COMMAND_WORD + " data\\addressbook.bak OR\n"
             + "Example: " + COMMAND_WORD + " github my_personal_access_token";

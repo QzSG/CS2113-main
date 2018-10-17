@@ -196,9 +196,10 @@ public class StorageManager extends ComponentManager implements Storage {
                     case GITHUB:
                     default:
                         gitHubStorage = new GitHubStorage(
-                            authToken.orElseThrow(() -> new OnlineBackupFailureException("Invalid auth token received")));
-                        AddressBook restoredAddressBook = XmlUtil.getDataFromString(gitHubStorage.readContentFromGist(ref), XmlSerializableAddressBook.class)
-                                .toModelType();
+                            authToken.orElseThrow(() -> new OnlineBackupFailureException("Invalid auth "
+                                    + "token received")));
+                        AddressBook restoredAddressBook = XmlUtil.getDataFromString(
+                                gitHubStorage.readContentFromGist(ref), XmlSerializableAddressBook.class).toModelType();
                         return restoredAddressBook;
                 }
             }
