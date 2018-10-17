@@ -85,8 +85,12 @@ public interface Model {
     /**
      * Backup current address book to storage.
      */
-    void backupAddressBook();
-    void backupAddressBook(Path backupPath);
+    void backupAddressBookLocal(Path backupPath);
+
+    /**
+     * Restore address book from storage.
+     */
+    void restoreAddressBook();
 
     /**
      * Returns true if a task with the same identity as {@code task} exists in the address book.

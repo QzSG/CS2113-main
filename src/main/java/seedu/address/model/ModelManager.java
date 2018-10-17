@@ -14,6 +14,7 @@ import seedu.address.commons.core.ComponentManager;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.events.model.AddressBookChangedEvent;
 import seedu.address.commons.events.model.AddressBookLocalBackupEvent;
+import seedu.address.commons.events.model.AddressBookLocalRestoreEvent;
 import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
 import seedu.address.model.task.Task;
@@ -72,6 +73,13 @@ public class ModelManager extends ComponentManager implements Model {
     private void indicateAddressBookBackupRequest(Path backupPath) {
         raise(new AddressBookLocalBackupEvent(versionedAddressBook, backupPath));
     }
+
+    /** Raises an event to indicate the request to restore address book from storage*/
+    private void indicateAddressBookRestoreRequest() {
+        raise(new AddressBookLocalRestoreEvent());
+    }
+
+
     //@@author
 
     @Override
@@ -147,17 +155,19 @@ public class ModelManager extends ComponentManager implements Model {
         versionedAddressBook.commit();
     }
 
-    @Override
-    public void backupAddressBook() {
-
-    }
-
     //@@author QzSG
     @Override
-    public void backupAddressBook(Path backupPath) {
+    public void backupAddressBookLocal(Path backupPath) {
         indicateAddressBookBackupRequest(backupPath);
     }
+
+    @Override
+    public void restoreAddressBook() {
+        indicateAddressBookRestoreRequest();
+    }
+
     //@@author
+
     @Override
     public boolean hasTask(Task task) {
         return false;

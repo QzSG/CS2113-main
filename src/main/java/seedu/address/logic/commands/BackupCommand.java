@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import javafx.concurrent.Task;
 import seedu.address.commons.core.EventsCenter;
 import seedu.address.commons.events.storage.OnlineBackupEvent;
 import seedu.address.logic.CommandHistory;
@@ -50,10 +49,10 @@ public class BackupCommand extends Command {
     public CommandResult execute(Model model, CommandHistory history) {
         requireNonNull(model);
         if (isLocal) {
-            model.backupAddressBook(retrievePath(model));
+            model.backupAddressBookLocal(retrievePath(model));
             return new CommandResult(String.format(MESSAGE_SUCCESS, retrievePath(model).toString()));
         } else {
-            new Thread(onlineBackupTask(model.getAddressBook())).start();
+            onlineBackupTask(model.getAddressBook());
             return new CommandResult(String.format(MESSAGE_SUCCESS, "GitHub Gists"));
         }
 
@@ -71,18 +70,10 @@ public class BackupCommand extends Command {
     }
 
     /**
-     * Background task to prevent main ui thread from freezing during online backup
+     * Raises event to start online backup
      * @param addressBook
-     * @return Task that can be started to run online backup on non ui thread
      */
-    private Task onlineBackupTask(ReadOnlyAddressBook addressBook) {
-        Task task = new Task<Void>() {
-            @Override public Void call() {
-                EventsCenter.getInstance().post(new OnlineBackupEvent(target, addressBook,
-                        "AddressBook.bak", authToken));
-                return null;
-            }
-        };
-        return task;
+    private void onlineBackupTask(ReadOnlyAddressBook addressBook) {
+        EventsCenter.getInstance().post(new OnlineBackupEvent(target, addressBook, "AddressBook.bak", authToken));
     }
 }
