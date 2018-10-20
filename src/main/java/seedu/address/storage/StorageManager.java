@@ -2,11 +2,11 @@ package seedu.address.storage;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-import javax.xml.bind.JAXBException;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -17,6 +17,7 @@ import seedu.address.commons.events.model.AddressBookChangedEvent;
 import seedu.address.commons.events.model.AddressBookLocalBackupEvent;
 import seedu.address.commons.events.model.AddressBookLocalRestoreEvent;
 import seedu.address.commons.events.model.AddressBookOnlineRestoreEvent;
+import seedu.address.commons.events.storage.DataRestoreExceptionEvent;
 import seedu.address.commons.events.storage.DataSavingExceptionEvent;
 import seedu.address.commons.events.storage.LocalRestoreEvent;
 import seedu.address.commons.events.storage.OnlineBackupEvent;
@@ -152,8 +153,8 @@ public class StorageManager extends ComponentManager implements Storage {
         try {
             ReadOnlyAddressBook restoredReadOnlyAddressBook = readAddressBook(event.path).get();
             raise(new AddressBookLocalRestoreEvent(restoredReadOnlyAddressBook));
-        } catch (IOException | DataConversionException e) {
-            raise(new DataSavingExceptionEvent(e));
+        } catch (IOException | DataConversionException | NoSuchElementException e) {
+            raise(new DataRestoreExceptionEvent(e));
         }
     }
 
@@ -178,9 +179,6 @@ public class StorageManager extends ComponentManager implements Storage {
      * @param target {@code OnlineStorage.OnlineStorageType} such as GITHUB
      * @param ref   Reference String to uniquely identify a file or a url to the backup resource.
      * @param authToken JWT or any other form of access token required by specific online backup service
-     * @throws IOException
-     * @throws OnlineBackupFailureException
-     * @throws JAXBException
      */
     private void restoreOnline(OnlineStorage.OnlineStorageType target, String ref, Optional<String> authToken) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -193,9 +191,6 @@ public class StorageManager extends ComponentManager implements Storage {
     /**
      * Performs restoration from local storage
      * @param path File path to local backup
-     * @throws IOException
-     * @throws OnlineBackupFailureException
-     * @throws JAXBException
      */
     private void restoreLocal(Path path) {
 
@@ -220,7 +215,7 @@ public class StorageManager extends ComponentManager implements Storage {
             raise(new AddressBookOnlineRestoreEvent(((Task<AddressBook>) restoreTask).getValue()));
         });
         restoreTask.setOnFailed(event -> {
-            raise(new DataSavingExceptionEvent((Exception) restoreTask.getException()));
+            raise(new DataRestoreExceptionEvent((Exception) restoreTask.getException()));
         });
         return restoreTask;
     }
