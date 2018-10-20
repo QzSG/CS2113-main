@@ -20,7 +20,7 @@ import seedu.address.commons.events.model.AddressBookLocalBackupEvent;
 import seedu.address.commons.events.model.AddressBookLocalRestoreEvent;
 import seedu.address.commons.events.model.AddressBookOnlineRestoreEvent;
 import seedu.address.commons.events.model.UserPrefsChangedEvent;
-import seedu.address.commons.events.storage.OnlineRestoreSuccessResultEvent;
+import seedu.address.commons.events.storage.OnlineBackupSuccessResultEvent;
 import seedu.address.commons.events.ui.NewResultAvailableEvent;
 import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
@@ -191,13 +191,19 @@ public class ModelManager extends ComponentManager implements Model {
 
     @SuppressWarnings("unused")
     @Subscribe
-    public void handleOnlineRestoreSuccessResultEvent(OnlineRestoreSuccessResultEvent event) {
+    public void handleOnlineBackupSuccessResultEvent(OnlineBackupSuccessResultEvent event) {
         logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring address book from online storage"));
-        handleOnlineRestoreSuccessResult(event.target, event.ref);
+        handleOnlineBackupSuccessResult(event.target, event.ref);
     }
 
-    private void handleOnlineRestoreSuccessResult(OnlineStorage.Type target, String ref) {
-        switch (target){
+    /**
+     * Processes the success callback object returned from {@code OnlineBackupSuccessResultEvent}. Updates the relevant
+     * fields in UserPreferences and raises an event to Storage Manager.
+     * @param target {@code OnlineStorage.Type}
+     * @param ref Reference object returned from successful online backup callback
+     */
+    private void handleOnlineBackupSuccessResult(OnlineStorage.Type target, String ref) {
+        switch (target) {
         case GITHUB:
         default:
             userPrefs.setAddressBookGistId(ref);

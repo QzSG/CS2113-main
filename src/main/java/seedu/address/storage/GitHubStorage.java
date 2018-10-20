@@ -18,8 +18,9 @@ import seedu.address.commons.exceptions.OnlineBackupFailureException;
  */
 public class GitHubStorage implements OnlineStorage {
 
-    private static GitHub github_ = null;
     public static final String SUCCESS_MESSAGE = "Successfully saved to Github Gists\nGists can be found at: %s";
+    private static GitHub github_ = null;
+
     private String authToken = null;
 
     public GitHubStorage(String authToken) {

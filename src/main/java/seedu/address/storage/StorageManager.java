@@ -23,8 +23,8 @@ import seedu.address.commons.events.storage.DataRestoreExceptionEvent;
 import seedu.address.commons.events.storage.DataSavingExceptionEvent;
 import seedu.address.commons.events.storage.LocalRestoreEvent;
 import seedu.address.commons.events.storage.OnlineBackupEvent;
+import seedu.address.commons.events.storage.OnlineBackupSuccessResultEvent;
 import seedu.address.commons.events.storage.OnlineRestoreEvent;
-import seedu.address.commons.events.storage.OnlineRestoreSuccessResultEvent;
 import seedu.address.commons.events.ui.NewResultAvailableEvent;
 import seedu.address.commons.exceptions.DataConversionException;
 import seedu.address.commons.exceptions.OnlineBackupFailureException;
@@ -240,8 +240,8 @@ public class StorageManager extends ComponentManager implements Storage {
      */
     private Task getOnlineBackupTask(OnlineStorage.Type target, ReadOnlyAddressBook data, String fileName,
                                      Optional<String> authToken) {
-        Task backupTask = new Task<OnlineRestoreSuccessResultEvent>() {
-            @Override public OnlineRestoreSuccessResultEvent call() throws Exception {
+        Task backupTask = new Task<OnlineBackupSuccessResultEvent>() {
+            @Override public OnlineBackupSuccessResultEvent call() throws Exception {
                 switch(target) {
                     case GITHUB:
                     default:
@@ -253,13 +253,13 @@ public class StorageManager extends ComponentManager implements Storage {
                         String successMessage = String.format(GitHubStorage.SUCCESS_MESSAGE, url);
                         updateMessage(successMessage);
                         String ref = url.getPath().substring(1);
-                        return new OnlineRestoreSuccessResultEvent(OnlineStorage.Type.GITHUB, ref);
+                        return new OnlineBackupSuccessResultEvent(OnlineStorage.Type.GITHUB, ref);
                 }
             }
         };
         backupTask.setOnSucceeded(event -> {
             raise(new NewResultAvailableEvent(backupTask.getMessage()));
-            raise((OnlineRestoreSuccessResultEvent) backupTask.getValue());
+            raise((OnlineBackupSuccessResultEvent) backupTask.getValue());
         });
         backupTask.setOnFailed(event -> {
             raise(new DataSavingExceptionEvent((Exception) backupTask.getException()));
