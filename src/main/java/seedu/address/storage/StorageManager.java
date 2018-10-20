@@ -142,19 +142,72 @@ public class StorageManager extends ComponentManager implements Storage {
 
     /**
      * Performs online backup to supported online storage
-     * @param target
-     * @param data
-     * @param fileName
-     * @param authToken
-     * @throws IOException
-     * @throws OnlineBackupFailureException
-     * @throws JAXBException
+     * @param target {@code OnlineStorage.OnlineStorageType} such as GITHUB
+     * @param data  {@code ReadOnlyAddressBook} data
+     * @param fileName Name of save backup file
+     * @param authToken Personal Access Token for GitHub Authentication
      */
     private void backupOnline(OnlineStorage.OnlineStorageType target, ReadOnlyAddressBook data,
                               String fileName, Optional<String> authToken) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-        Task task = new Task<Void>() {
+        Task backupTask = getOnlineBackupTask(target, data, fileName, authToken);
+
+        executorService.submit(backupTask);
+    }
+
+    /**
+     * Performs restoration from supported online storage
+     * @param target {@code OnlineStorage.OnlineStorageType} such as GITHUB
+     * @param ref   Reference String to uniquely identify a file or a url to the backup resource.
+     * @param authToken JWT or any other form of access token required by specific online backup service
+     * @throws IOException
+     * @throws OnlineBackupFailureException
+     * @throws JAXBException
+     */
+    private void restoreOnline(OnlineStorage.OnlineStorageType target, String ref, Optional<String> authToken) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        Task restoreTask = getOnlineRestoreTask(target, ref, authToken);
+
+        executorService.submit(restoreTask);
+    }
+
+    private Task getOnlineRestoreTask(OnlineStorage.OnlineStorageType target, String ref, Optional<String> authToken) {
+        Task restoreTask = new Task<AddressBook>() {
+            @Override public AddressBook call() throws Exception {
+                switch(target) {
+                    case GITHUB:
+                    default:
+                        gitHubStorage = new GitHubStorage(
+                            authToken.orElseThrow(() -> new OnlineBackupFailureException("Invalid auth "
+                                    + "token received")));
+                        AddressBook restoredAddressBook = XmlUtil.getDataFromString(
+                                gitHubStorage.readContentFromGist(ref), XmlSerializableAddressBook.class).toModelType();
+                        return restoredAddressBook;
+                }
+            }
+        };
+        restoreTask.setOnSucceeded(event -> {
+            raise(new AddressBookOnlineRestoreEvent(((Task<AddressBook>) restoreTask).getValue()));
+        });
+        restoreTask.setOnFailed(event -> {
+            raise(new DataSavingExceptionEvent((Exception) restoreTask.getException()));
+        });
+        return restoreTask;
+    }
+
+    /**
+     * Creates an online backup tasks based on {@code OnlineStorage.OnlineStorageType} and returns the created task.
+     * @param target {@code OnlineStorage.OnlineStorageType} such as GITHUB
+     * @param data  {@code ReadOnlyAddressBook} data
+     * @param fileName Name of save backup file
+     * @param authToken Personal Access Token for GitHub Authentication
+     * @return
+     */
+    private Task getOnlineBackupTask(OnlineStorage.OnlineStorageType target, ReadOnlyAddressBook data, String fileName,
+                                     Optional<String> authToken) {
+        Task backupTask = new Task<Void>() {
             @Override public Void call() throws Exception {
                 switch(target) {
                     case GITHUB:
@@ -169,47 +222,12 @@ public class StorageManager extends ComponentManager implements Storage {
                 return null;
             }
         };
-        task.setOnSucceeded(event -> {
-            raise(new NewResultAvailableEvent(task.getMessage()));
+        backupTask.setOnSucceeded(event -> {
+            raise(new NewResultAvailableEvent(backupTask.getMessage()));
         });
-        task.setOnFailed(event -> {
-            raise(new DataSavingExceptionEvent((Exception) task.getException()));
+        backupTask.setOnFailed(event -> {
+            raise(new DataSavingExceptionEvent((Exception) backupTask.getException()));
         });
-        executorService.submit(task);
-    }
-
-    /**
-     * Performs restoration from supported online storage
-     * @param target
-     * @param ref
-     * @param authToken
-     * @throws IOException
-     * @throws OnlineBackupFailureException
-     * @throws JAXBException
-     */
-    private void restoreOnline(OnlineStorage.OnlineStorageType target, String ref, Optional<String> authToken) {
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-        Task task = new Task<AddressBook>() {
-            @Override public AddressBook call() throws Exception {
-                switch(target) {
-                    case GITHUB:
-                    default:
-                        gitHubStorage = new GitHubStorage(
-                            authToken.orElseThrow(() -> new OnlineBackupFailureException("Invalid auth "
-                                    + "token received")));
-                        AddressBook restoredAddressBook = XmlUtil.getDataFromString(
-                                gitHubStorage.readContentFromGist(ref), XmlSerializableAddressBook.class).toModelType();
-                        return restoredAddressBook;
-                }
-            }
-        };
-        task.setOnSucceeded(event -> {
-            raise(new AddressBookOnlineRestoreEvent(((Task<AddressBook>) task).getValue()));
-        });
-        task.setOnFailed(event -> {
-            raise(new DataSavingExceptionEvent((Exception) task.getException()));
-        });
-        executorService.submit(task);
+        return backupTask;
     }
 }
