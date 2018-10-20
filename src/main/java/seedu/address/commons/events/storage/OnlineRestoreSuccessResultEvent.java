@@ -1,27 +1,23 @@
 package seedu.address.commons.events.storage;
 
-import java.util.Optional;
-
 import seedu.address.commons.events.BaseEvent;
 import seedu.address.storage.OnlineStorage;
 
 //@@author QzSG
 
 /** Indicates a request for online backup*/
-public class OnlineRestoreEvent extends BaseEvent {
+public class OnlineRestoreSuccessResultEvent extends BaseEvent {
 
     public final OnlineStorage.Type target;
     public final String ref;
-    public final Optional<String> authToken;
 
-    public OnlineRestoreEvent(OnlineStorage.Type target, String ref, Optional<String> authToken) {
+    public OnlineRestoreSuccessResultEvent(OnlineStorage.Type target, String ref) {
         this.target = target;
         this.ref = ref;
-        this.authToken = authToken;
     }
 
     @Override
     public String toString() {
-        return "Restoring online backup";
+        return "Signaling user preference update with success reference from specific online service";
     }
 }

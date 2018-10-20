@@ -4,6 +4,7 @@ package seedu.address.storage;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
+import java.net.URL;
 
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistBuilder;
@@ -18,7 +19,7 @@ import seedu.address.commons.exceptions.OnlineBackupFailureException;
 public class GitHubStorage implements OnlineStorage {
 
     private static GitHub github_ = null;
-    private static final String SUCCESS_MESSAGE = "Successfully saved to Github Gists\nGists can be found at: %s";
+    public static final String SUCCESS_MESSAGE = "Successfully saved to Github Gists\nGists can be found at: %s";
     private String authToken = null;
 
     public GitHubStorage(String authToken) {
@@ -33,7 +34,7 @@ public class GitHubStorage implements OnlineStorage {
     }
 
     @Override
-    public String saveContentToStorage(String content, String fileName, String description)
+    public URL saveContentToStorage(String content, String fileName, String description)
             throws IOException {
         requireNonNull(content);
         requireNonNull(fileName);
@@ -41,7 +42,7 @@ public class GitHubStorage implements OnlineStorage {
         github_ = GitHub.connectUsingOAuth(authToken);
         GHGistBuilder ghGistBuilder = buildGistFromContent(content, fileName, description);
         GHGist ghGist = ghGistBuilder.create();
-        return String.format(SUCCESS_MESSAGE, ghGist.getHtmlUrl().toString());
+        return ghGist.getHtmlUrl();
     }
 
     private GHGistBuilder buildGistFromContent(String content, String fileName, String description) {

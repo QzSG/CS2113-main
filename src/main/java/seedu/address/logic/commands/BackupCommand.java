@@ -30,17 +30,17 @@ public class BackupCommand extends Command {
 
     private Optional<Path> backupPath;
     private boolean isLocal = true;
-    private OnlineStorage.OnlineStorageType target;
+    private OnlineStorage.Type target;
     private Optional<String> authToken;
 
     /**
      * Creates a BackupCommand to backup data to storage
      */
     public BackupCommand(Optional<Path> backupPath, boolean isLocal,
-                         Optional<OnlineStorage.OnlineStorageType> target, Optional<String> authToken) {
+                         Optional<OnlineStorage.Type> target, Optional<String> authToken) {
         this.backupPath = backupPath;
         this.isLocal = isLocal;
-        this.target = target.orElse(OnlineStorage.OnlineStorageType.GITHUB);
+        this.target = target.orElse(OnlineStorage.Type.GITHUB);
         this.authToken = authToken;
 
     }

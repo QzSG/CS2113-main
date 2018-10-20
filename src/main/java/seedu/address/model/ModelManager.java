@@ -19,10 +19,13 @@ import seedu.address.commons.events.model.AddressBookChangedEvent;
 import seedu.address.commons.events.model.AddressBookLocalBackupEvent;
 import seedu.address.commons.events.model.AddressBookLocalRestoreEvent;
 import seedu.address.commons.events.model.AddressBookOnlineRestoreEvent;
+import seedu.address.commons.events.model.UserPrefsChangedEvent;
+import seedu.address.commons.events.storage.OnlineRestoreSuccessResultEvent;
 import seedu.address.commons.events.ui.NewResultAvailableEvent;
 import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
 import seedu.address.model.task.Task;
+import seedu.address.storage.OnlineStorage;
 
 /**
  * Represents the in-memory model of the address book data.
@@ -185,6 +188,23 @@ public class ModelManager extends ComponentManager implements Model {
         logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring address book from online storage"));
         restoreAddressBook(event.data);
     }
+
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void handleOnlineRestoreSuccessResultEvent(OnlineRestoreSuccessResultEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring address book from online storage"));
+        handleOnlineRestoreSuccessResult(event.target, event.ref);
+    }
+
+    private void handleOnlineRestoreSuccessResult(OnlineStorage.Type target, String ref) {
+        switch (target){
+        case GITHUB:
+        default:
+            userPrefs.setAddressBookGistId(ref);
+        }
+        raise(new UserPrefsChangedEvent(userPrefs));
+    }
+
     //@@author
 
     //@@author luhan02

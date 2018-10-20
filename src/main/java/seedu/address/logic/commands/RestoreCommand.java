@@ -28,20 +28,21 @@ public class RestoreCommand extends Command {
             + "Example: " + COMMAND_WORD + " github my_personal_access_token";
 
     public static final String MESSAGE_SUCCESS = "Restoring Backup from %s";
-
+    public static final String MESSAGE_FAILURE = "Please perform an online backup using %s first or set relevant"
+             + " settings in user prefs";
     private Optional<Path> backupPath;
     private boolean isLocal = true;
-    private OnlineStorage.OnlineStorageType target;
+    private OnlineStorage.Type target;
     private Optional<String> authToken;
 
     /**
      * Creates a RestoreCommand to backup data to storage
      */
     public RestoreCommand(Optional<Path> backupPath, boolean isLocal,
-                          Optional<OnlineStorage.OnlineStorageType> target, Optional<String> authToken) {
+                          Optional<OnlineStorage.Type> target, Optional<String> authToken) {
         this.backupPath = backupPath;
         this.isLocal = isLocal;
-        this.target = target.orElse(OnlineStorage.OnlineStorageType.GITHUB);
+        this.target = target.orElse(OnlineStorage.Type.GITHUB);
         this.authToken = authToken;
 
     }
@@ -53,8 +54,12 @@ public class RestoreCommand extends Command {
             EventsCenter.getInstance().post(new LocalRestoreEvent(retrievePath(model)));
             return new CommandResult(String.format(MESSAGE_SUCCESS, retrievePath(model).toString()));
         } else {
+            String gistId = model.getUserPrefs().getAddressBookGistId();
+            if (gistId == null) {
+                return new CommandResult(String.format(MESSAGE_FAILURE, ": backup github [personal_access_token]"));
+            }
             EventsCenter.getInstance().post(new OnlineRestoreEvent(target,
-                    "53b262c0c41a18747dd3978941901057", authToken));
+                    model.getUserPrefs().getAddressBookGistId(), authToken));
             return new CommandResult(String.format(MESSAGE_SUCCESS, "GitHub Gists"));
         }
 

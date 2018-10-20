@@ -10,12 +10,12 @@ import seedu.address.storage.OnlineStorage;
 /** Indicates a request for online backup*/
 public class OnlineBackupEvent extends BaseEvent {
 
-    public final OnlineStorage.OnlineStorageType target;
+    public final OnlineStorage.Type target;
     public final ReadOnlyAddressBook data;
     public final String fileName;
     public final Optional<String> authToken;
 
-    public OnlineBackupEvent(OnlineStorage.OnlineStorageType target, ReadOnlyAddressBook data,
+    public OnlineBackupEvent(OnlineStorage.Type target, ReadOnlyAddressBook data,
                              String fileName, Optional<String> authToken) {
         this.target = target;
         this.data = data;

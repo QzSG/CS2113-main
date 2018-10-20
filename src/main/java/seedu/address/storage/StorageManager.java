@@ -1,6 +1,7 @@
 package seedu.address.storage;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -17,11 +18,13 @@ import seedu.address.commons.events.model.AddressBookChangedEvent;
 import seedu.address.commons.events.model.AddressBookLocalBackupEvent;
 import seedu.address.commons.events.model.AddressBookLocalRestoreEvent;
 import seedu.address.commons.events.model.AddressBookOnlineRestoreEvent;
+import seedu.address.commons.events.model.UserPrefsChangedEvent;
 import seedu.address.commons.events.storage.DataRestoreExceptionEvent;
 import seedu.address.commons.events.storage.DataSavingExceptionEvent;
 import seedu.address.commons.events.storage.LocalRestoreEvent;
 import seedu.address.commons.events.storage.OnlineBackupEvent;
 import seedu.address.commons.events.storage.OnlineRestoreEvent;
+import seedu.address.commons.events.storage.OnlineRestoreSuccessResultEvent;
 import seedu.address.commons.events.ui.NewResultAvailableEvent;
 import seedu.address.commons.exceptions.DataConversionException;
 import seedu.address.commons.exceptions.OnlineBackupFailureException;
@@ -64,6 +67,13 @@ public class StorageManager extends ComponentManager implements Storage {
     public void saveUserPrefs(UserPrefs userPrefs) throws IOException {
         userPrefsStorage.saveUserPrefs(userPrefs);
     }
+
+    //@@author QzSG
+    @Subscribe
+    public void handleUserPrefsChangedEvent(UserPrefsChangedEvent event) throws IOException {
+        saveUserPrefs(event.data);
+    }
+    //@@author
 
 
     // ================ AddressBook methods ==============================
@@ -160,12 +170,12 @@ public class StorageManager extends ComponentManager implements Storage {
 
     /**
      * Performs online backup to supported online storage
-     * @param target {@code OnlineStorage.OnlineStorageType} such as GITHUB
+     * @param target {@code OnlineStorage.Type} such as GITHUB
      * @param data  {@code ReadOnlyAddressBook} data
      * @param fileName Name of save backup file
      * @param authToken Personal Access Token for GitHub Authentication
      */
-    private void backupOnline(OnlineStorage.OnlineStorageType target, ReadOnlyAddressBook data,
+    private void backupOnline(OnlineStorage.Type target, ReadOnlyAddressBook data,
                               String fileName, Optional<String> authToken) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -176,11 +186,11 @@ public class StorageManager extends ComponentManager implements Storage {
 
     /**
      * Performs restoration from supported online storage
-     * @param target {@code OnlineStorage.OnlineStorageType} such as GITHUB
+     * @param target {@code OnlineStorage.Type} such as GITHUB
      * @param ref   Reference String to uniquely identify a file or a url to the backup resource.
      * @param authToken JWT or any other form of access token required by specific online backup service
      */
-    private void restoreOnline(OnlineStorage.OnlineStorageType target, String ref, Optional<String> authToken) {
+    private void restoreOnline(OnlineStorage.Type target, String ref, Optional<String> authToken) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
         Task restoreTask = getOnlineRestoreTask(target, ref, authToken);
@@ -196,7 +206,7 @@ public class StorageManager extends ComponentManager implements Storage {
 
     }
 
-    private Task getOnlineRestoreTask(OnlineStorage.OnlineStorageType target, String ref, Optional<String> authToken) {
+    private Task getOnlineRestoreTask(OnlineStorage.Type target, String ref, Optional<String> authToken) {
         Task restoreTask = new Task<AddressBook>() {
             @Override public AddressBook call() throws Exception {
                 switch(target) {
@@ -221,32 +231,35 @@ public class StorageManager extends ComponentManager implements Storage {
     }
 
     /**
-     * Creates an online backup tasks based on {@code OnlineStorage.OnlineStorageType} and returns the created task.
-     * @param target {@code OnlineStorage.OnlineStorageType} such as GITHUB
+     * Creates an online backup tasks based on {@code OnlineStorage.Type} and returns the created task.
+     * @param target {@code OnlineStorage.Type} such as GITHUB
      * @param data  {@code ReadOnlyAddressBook} data
      * @param fileName Name of save backup file
      * @param authToken Personal Access Token for GitHub Authentication
      * @return
      */
-    private Task getOnlineBackupTask(OnlineStorage.OnlineStorageType target, ReadOnlyAddressBook data, String fileName,
+    private Task getOnlineBackupTask(OnlineStorage.Type target, ReadOnlyAddressBook data, String fileName,
                                      Optional<String> authToken) {
-        Task backupTask = new Task<Void>() {
-            @Override public Void call() throws Exception {
+        Task backupTask = new Task<OnlineRestoreSuccessResultEvent>() {
+            @Override public OnlineRestoreSuccessResultEvent call() throws Exception {
                 switch(target) {
                     case GITHUB:
                     default:
                         gitHubStorage = new GitHubStorage(
                                 authToken.orElseThrow(() -> new OnlineBackupFailureException("Invalid auth "
                                         + "token received")));
-                        String successMessage = gitHubStorage.saveContentToStorage(XmlUtil.convertDataToString(
+                        URL url = gitHubStorage.saveContentToStorage(XmlUtil.convertDataToString(
                                 new XmlSerializableAddressBook(data)), fileName, "Address Book Backup");
+                        String successMessage = String.format(GitHubStorage.SUCCESS_MESSAGE, url);
                         updateMessage(successMessage);
+                        String ref = url.getPath().substring(1);
+                        return new OnlineRestoreSuccessResultEvent(OnlineStorage.Type.GITHUB, ref);
                 }
-                return null;
             }
         };
         backupTask.setOnSucceeded(event -> {
             raise(new NewResultAvailableEvent(backupTask.getMessage()));
+            raise((OnlineRestoreSuccessResultEvent) backupTask.getValue());
         });
         backupTask.setOnFailed(event -> {
             raise(new DataSavingExceptionEvent((Exception) backupTask.getException()));
