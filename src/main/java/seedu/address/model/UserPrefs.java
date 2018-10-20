@@ -15,6 +15,8 @@ public class UserPrefs {
     private Path addressBookFilePath;
     private Path addressBookBackupFilePath;
 
+    private String addressBookGistId;
+
     public UserPrefs() {
         setGuiSettings(500, 500, 0, 0);
         setAddressBookFilePath(getAddressBookFilePath());
@@ -47,6 +49,14 @@ public class UserPrefs {
 
     public void setAddressBookBackupFilePath(Path addressBookBackupFilePath) {
         this.addressBookBackupFilePath = addressBookBackupFilePath;
+    }
+
+    public String getAddressBookGistId() {
+        return addressBookGistId;
+    }
+
+    public void setAddressBookGistId(String addressBookGistId) {
+        this.addressBookGistId = addressBookGistId;
     }
 
     @Override

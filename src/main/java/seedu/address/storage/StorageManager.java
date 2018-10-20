@@ -15,8 +15,10 @@ import seedu.address.commons.core.ComponentManager;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.events.model.AddressBookChangedEvent;
 import seedu.address.commons.events.model.AddressBookLocalBackupEvent;
+import seedu.address.commons.events.model.AddressBookLocalRestoreEvent;
 import seedu.address.commons.events.model.AddressBookOnlineRestoreEvent;
 import seedu.address.commons.events.storage.DataSavingExceptionEvent;
+import seedu.address.commons.events.storage.LocalRestoreEvent;
 import seedu.address.commons.events.storage.OnlineBackupEvent;
 import seedu.address.commons.events.storage.OnlineRestoreEvent;
 import seedu.address.commons.events.ui.NewResultAvailableEvent;
@@ -140,6 +142,21 @@ public class StorageManager extends ComponentManager implements Storage {
         restoreOnline(event.target, event.ref, event.authToken);
     }
 
+    /*
+    Listens directly to RestoreCommand
+    */
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void handleLocalRestoreEvent(LocalRestoreEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Retrieving student planner data from storage"));
+        try {
+            ReadOnlyAddressBook restoredReadOnlyAddressBook = readAddressBook(event.path).get();
+            raise(new AddressBookLocalRestoreEvent(restoredReadOnlyAddressBook));
+        } catch (IOException | DataConversionException e) {
+            raise(new DataSavingExceptionEvent(e));
+        }
+    }
+
     /**
      * Performs online backup to supported online storage
      * @param target {@code OnlineStorage.OnlineStorageType} such as GITHUB
@@ -171,6 +188,17 @@ public class StorageManager extends ComponentManager implements Storage {
         Task restoreTask = getOnlineRestoreTask(target, ref, authToken);
 
         executorService.submit(restoreTask);
+    }
+
+    /**
+     * Performs restoration from local storage
+     * @param path File path to local backup
+     * @throws IOException
+     * @throws OnlineBackupFailureException
+     * @throws JAXBException
+     */
+    private void restoreLocal(Path path) {
+
     }
 
     private Task getOnlineRestoreTask(OnlineStorage.OnlineStorageType target, String ref, Optional<String> authToken) {

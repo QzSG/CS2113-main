@@ -3,11 +3,9 @@ package seedu.address.model;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
-import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
-import javax.xml.bind.JAXBException;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -19,15 +17,12 @@ import seedu.address.commons.core.ComponentManager;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.events.model.AddressBookChangedEvent;
 import seedu.address.commons.events.model.AddressBookLocalBackupEvent;
+import seedu.address.commons.events.model.AddressBookLocalRestoreEvent;
 import seedu.address.commons.events.model.AddressBookOnlineRestoreEvent;
-import seedu.address.commons.events.storage.DataRestoreExceptionEvent;
 import seedu.address.commons.events.ui.NewResultAvailableEvent;
-import seedu.address.commons.exceptions.IllegalValueException;
-import seedu.address.commons.util.XmlUtil;
 import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
 import seedu.address.model.task.Task;
-import seedu.address.storage.XmlSerializableAddressBook;
 
 /**
  * Represents the in-memory model of the address book data.
@@ -172,20 +167,16 @@ public class ModelManager extends ComponentManager implements Model {
     }
 
     @Override
-    public void restoreAddressBookLocal(Path backupPath) {
-        try {
-            AddressBook restoredAddressBook = XmlUtil.getDataFromFile(backupPath, XmlSerializableAddressBook.class)
-                    .toModelType();
-            restoreAddressBook(restoredAddressBook);
-        } catch (IllegalValueException | JAXBException | FileNotFoundException e) {
-            raise(new DataRestoreExceptionEvent(e));
-        }
-    }
-
-    @Override
     public void restoreAddressBook(ReadOnlyAddressBook restoredAddressBook) {
         versionedAddressBook.resetData(restoredAddressBook);
         Platform.runLater(() -> indicateAddressBookChanged("Address Book Data Restored"));
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void handleAddressBookLocalRestoreEvent(AddressBookLocalRestoreEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring address book from local storage"));
+        restoreAddressBook(event.readOnlyAddressBook);
     }
 
     @SuppressWarnings("unused")

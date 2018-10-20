@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 import seedu.address.commons.core.EventsCenter;
+import seedu.address.commons.events.storage.LocalRestoreEvent;
 import seedu.address.commons.events.storage.OnlineRestoreEvent;
 import seedu.address.logic.CommandHistory;
 import seedu.address.model.Model;
@@ -49,10 +50,11 @@ public class RestoreCommand extends Command {
     public CommandResult execute(Model model, CommandHistory history) {
         requireNonNull(model);
         if (isLocal) {
-            model.restoreAddressBookLocal(retrievePath(model));
+            EventsCenter.getInstance().post(new LocalRestoreEvent(retrievePath(model)));
             return new CommandResult(String.format(MESSAGE_SUCCESS, retrievePath(model).toString()));
         } else {
-            onlineRestoreTask();
+            EventsCenter.getInstance().post(new OnlineRestoreEvent(target,
+                    "53b262c0c41a18747dd3978941901057", authToken));
             return new CommandResult(String.format(MESSAGE_SUCCESS, "GitHub Gists"));
         }
 
@@ -67,12 +69,5 @@ public class RestoreCommand extends Command {
         return other == this // short circuit if same object
                 || (other instanceof RestoreCommand // instanceof handles nulls
                 && backupPath.equals(((RestoreCommand) other).backupPath));
-    }
-
-    /**
-     * Raises event to start online restore
-     */
-    private void onlineRestoreTask() {
-        EventsCenter.getInstance().post(new OnlineRestoreEvent(target, "53b262c0c41a18747dd3978941901057", authToken));
     }
 }
