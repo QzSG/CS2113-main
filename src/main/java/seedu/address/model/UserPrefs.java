@@ -71,13 +71,16 @@ public class UserPrefs {
         UserPrefs o = (UserPrefs) other;
 
         return Objects.equals(guiSettings, o.guiSettings)
-                && Objects.equals(addressBookFilePath, o.addressBookFilePath)
-                && Objects.equals(addressBookBackupFilePath, o.addressBookBackupFilePath);
+                && Objects.equals(addressBookFilePath.toAbsolutePath(), o.addressBookFilePath.toAbsolutePath())
+                && Objects.equals(
+                        addressBookBackupFilePath.toAbsolutePath(), o.addressBookBackupFilePath.toAbsolutePath())
+                && Objects.equals(addressBookGistId, o.addressBookGistId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(guiSettings, addressBookFilePath, addressBookBackupFilePath);
+        return Objects.hash(guiSettings, addressBookFilePath,
+                addressBookBackupFilePath, addressBookGistId);
     }
 
     @Override
@@ -86,6 +89,7 @@ public class UserPrefs {
         sb.append("Gui Settings : " + guiSettings.toString());
         sb.append("\nLocal data file location : " + addressBookFilePath);
         sb.append("\nLocal data backup file location : " + addressBookBackupFilePath);
+        sb.append("\nOnline data backup gist id : " + addressBookGistId);
         return sb.toString();
     }
 
