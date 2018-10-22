@@ -43,8 +43,8 @@ if (JavaVersion.current() == JavaVersion.VERSION_1_10
 // Specifies the entry point of the application
 mainClassName = 'seedu.address.MainApp'
 
-sourceCompatibility = JavaVersion.VERSION_1_9
-targetCompatibility = JavaVersion.VERSION_1_9
+sourceCompatibility = JavaVersion.VERSION_1_10
+targetCompatibility = JavaVersion.VERSION_1_10
 
 repositories {
     mavenCentral()
@@ -74,6 +74,7 @@ dependencies {
     compile "org.openjfx:javafx-base:11:$platform"
     compile "org.openjfx:javafx-graphics:11:$platform"
     compile "org.openjfx:javafx-controls:11:$platform"
+    compile "org.openjfx:javafx-fxml:11:$platform"
 
     implementation group: 'org.controlsfx', name: 'controlsfx', version: '8.40.11'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.0'
