@@ -107,7 +107,8 @@ compileJava {
                 '--module-path', classpath.asPath,
                 '--add-modules', 'javafx.controls',
                 '--add-modules', 'javafx.fxml',
-                '--add-modules', 'javafx.web'
+                '--add-modules', 'javafx.web',
+                '--add-exports', 'javafx.graphics/com.sun.glass.ui=ALL-UNNAMED'
         ]
     }
 }
@@ -118,7 +119,8 @@ run {
                 '--module-path', classpath.asPath,
                 '--add-modules', 'javafx.controls',
                 '--add-modules', 'javafx.fxml',
-                '--add-modules', 'javafx.web'
+                '--add-modules', 'javafx.web',
+                '--add-exports', 'javafx.graphics/com.sun.glass.ui=ALL-UNNAMED'
         ]
     }
 }
