@@ -75,6 +75,7 @@ dependencies {
     compile "org.openjfx:javafx-graphics:11:$platform"
     compile "org.openjfx:javafx-controls:11:$platform"
     compile "org.openjfx:javafx-fxml:11:$platform"
+    compile "org.openjfx:javafx-web:11:$platform"
 
     implementation group: 'org.controlsfx', name: 'controlsfx', version: '8.40.11'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.0'
@@ -105,7 +106,8 @@ compileJava {
         options.compilerArgs = [
                 '--module-path', classpath.asPath,
                 '--add-modules', 'javafx.controls',
-                '--add-modules', 'javafx.fxml'
+                '--add-modules', 'javafx.fxml',
+                '--add-modules', 'javafx.web'
         ]
     }
 }
@@ -115,7 +117,8 @@ run {
         jvmArgs = [
                 '--module-path', classpath.asPath,
                 '--add-modules', 'javafx.controls',
-                '--add-modules', 'javafx.fxml'
+                '--add-modules', 'javafx.fxml',
+                '--add-modules', 'javafx.web'
         ]
     }
 }
