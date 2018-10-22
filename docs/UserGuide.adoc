@@ -273,7 +273,7 @@ There is no need to save manually.
 Alert user when a deadline is due
 
 // tag::databackup[]
-=== Backup data :`backup`
+=== Backup data : `backup`
 
 Allow user to backup data _locally_ or to online services.
 
@@ -294,7 +294,7 @@ Creates an online backup to GitHub Gists using the provided personal access toke
 // end::databackup[]
 
 // tag::datarestore[]
-=== Restore data :`restore`
+=== Restore data : `restore`
 
 Allow user to restore data backups _locally_ or from online services.
 
