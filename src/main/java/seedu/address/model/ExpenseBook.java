@@ -9,7 +9,7 @@ import seedu.address.model.expense.Expense;
 import seedu.address.model.expense.ExpenseList;
 
 /**
- * Wraps all addressData at the expense-book level
+ * Wraps all data at the expense-book level
  */
 public class ExpenseBook implements ReadOnlyExpenseBook {
     private final ExpenseList expenses;
@@ -44,7 +44,7 @@ public class ExpenseBook implements ReadOnlyExpenseBook {
     }
 
     /**
-     * Resets the existing addressData of this {@code ExpenseBook} with {@code newData}.
+     * Resets the existing data of this {@code ExpenseBook} with {@code newData}.
      */
     public void resetData(ReadOnlyExpenseBook newData) {
         requireNonNull(newData);
