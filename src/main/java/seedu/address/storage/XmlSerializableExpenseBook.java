@@ -42,7 +42,7 @@ public class XmlSerializableExpenseBook {
     /**
      * Converts this expensebook into the model's {@code ExpenseBook} object.
      *
-     * @throws IllegalValueException if there were any addressData constraints violated
+     * @throws IllegalValueException if there were any data constraints violated
      */
     public ExpenseBook toModelType() throws IllegalValueException {
         ExpenseBook expenseBook = new ExpenseBook();
