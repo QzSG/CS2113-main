@@ -68,7 +68,7 @@ public class XmlAdaptedExpense {
     /**
      * Converts this jaxb-friendly adapted Expense object into the model's Expense object.
      *
-     * @throws IllegalValueException if there were any addressData constraints violated in the adapted Expense
+     * @throws IllegalValueException if there were any data constraints violated in the adapted Expense
      */
     public Expense toModelType() throws IllegalValueException {
         final List<Tag> expenseTags = new ArrayList<>();
