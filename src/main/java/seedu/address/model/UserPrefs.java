@@ -110,9 +110,9 @@ public class UserPrefs {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Gui Settings : " + guiSettings.toString());
-        sb.append("\nLocal addressData file location : " + addressBookFilePath);
-        sb.append("\nLocal addressData backup file location : " + addressBookBackupFilePath);
-        sb.append("\nOnline addressData backup gist id : " + addressBookGistId);
+        sb.append("\nLocal data file location : " + addressBookFilePath);
+        sb.append("\nLocal data backup file location : " + addressBookBackupFilePath);
+        sb.append("\nOnline data backup gist id : " + addressBookGistId);
         return sb.toString();
     }
 
