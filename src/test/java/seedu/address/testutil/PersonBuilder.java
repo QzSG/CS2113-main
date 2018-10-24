@@ -36,7 +36,7 @@ public class PersonBuilder {
     }
 
     /**
-     * Initializes the PersonBuilder with the addressData of {@code personToCopy}.
+     * Initializes the PersonBuilder with the data of {@code personToCopy}.
      */
     public PersonBuilder(Person personToCopy) {
         name = personToCopy.getName();
