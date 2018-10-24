@@ -33,7 +33,7 @@ import seedu.address.model.task.Task;
 import seedu.address.storage.OnlineStorage;
 
 /**
- * Represents the in-memory model of the address book addressData.
+ * Represents the in-memory model of the address book data.
  */
 public class ModelManager extends ComponentManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
