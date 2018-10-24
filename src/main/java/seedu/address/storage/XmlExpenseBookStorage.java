@@ -16,7 +16,7 @@ import seedu.address.commons.util.FileUtil;
 import seedu.address.model.ReadOnlyExpenseBook;
 
 /**
- * A class to access ExpenseBook addressData stored as an xml file on the hard disk.
+ * A class to access ExpenseBook data stored as an xml file on the hard disk.
  */
 public class XmlExpenseBookStorage implements ExpenseBookStorage {
 
@@ -39,7 +39,7 @@ public class XmlExpenseBookStorage implements ExpenseBookStorage {
 
     /**
      * Similar to {@link #readExpenseBook()}
-     * @param filePath location of the addressData. Cannot be null
+     * @param filePath location of the data. Cannot be null
      * @throws DataConversionException if the file is not in the correct format.
      */
     public Optional<ReadOnlyExpenseBook> readExpenseBook(Path filePath) throws DataConversionException,
@@ -67,7 +67,7 @@ public class XmlExpenseBookStorage implements ExpenseBookStorage {
 
     /**
      * Similar to {@link #saveExpenseBook(ReadOnlyExpenseBook)}
-     * @param filePath location of the addressData. Cannot be null
+     * @param filePath location of the data. Cannot be null
      */
     public void saveExpenseBook(ReadOnlyExpenseBook expenseBook, Path filePath) throws IOException {
         requireNonNull(expenseBook);
