@@ -24,7 +24,7 @@ public class TypicalExpenses {
             .withTags("lunch").build();
     public static final Expense TRANSPORT = new ExpenseBuilder().withExpenseCategory("transport")
             .withExpenseDate("12/30/2018").withExpenseValue("11.00")
-            .withTags("rab").build();
+            .withTags("grab").build();
     public static final Expense DATE = new ExpenseBuilder().withExpenseCategory("date")
             .withExpenseDate("12/30/2018").withExpenseValue("11.10").build();
     public static final Expense HOTEL = new ExpenseBuilder().withExpenseCategory("hotel")
