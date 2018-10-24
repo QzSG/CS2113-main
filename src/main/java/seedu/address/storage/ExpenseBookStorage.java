@@ -13,14 +13,14 @@ import seedu.address.model.ReadOnlyExpenseBook;
 public interface ExpenseBookStorage {
 
     /**
-     * Returns the file path of the addressData file.
+     * Returns the file path of the data file.
      */
     Path getExpenseBookFilePath();
 
     /**
-     * Returns ExpenseBook addressData as a {@link ReadOnlyExpenseBook}.
+     * Returns ExpenseBook data as a {@link ReadOnlyExpenseBook}.
      *   Returns {@code Optional.empty()} if storage file is not found.
-     * @throws DataConversionException if the addressData in storage is not in the expected format.
+     * @throws DataConversionException if the data in storage is not in the expected format.
      * @throws IOException if there was any problem when reading from the storage.
      */
     Optional<ReadOnlyExpenseBook> readExpenseBook() throws DataConversionException, IOException;
