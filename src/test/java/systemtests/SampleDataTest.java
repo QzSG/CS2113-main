@@ -15,7 +15,7 @@ import seedu.address.testutil.TestUtil;
 
 public class SampleDataTest extends AddressBookSystemTest {
     /**
-     * Returns null to force test app to load data of the file in {@code getDataFileLocation()}.
+     * Returns null to force test app to load addressData of the file in {@code getDataFileLocation()}.
      */
     @Override
     protected AddressBook getInitialData() {
@@ -23,7 +23,7 @@ public class SampleDataTest extends AddressBookSystemTest {
     }
 
     /**
-     * Returns a non-existent file location to force test app to load sample data.
+     * Returns a non-existent file location to force test app to load sample addressData.
      */
     @Override
     protected Path getDataFileLocation() {

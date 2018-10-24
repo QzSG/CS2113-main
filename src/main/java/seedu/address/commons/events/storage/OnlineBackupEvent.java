@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import seedu.address.commons.events.BaseEvent;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.model.ReadOnlyExpenseBook;
 import seedu.address.storage.OnlineStorage;
 
 //@@author QzSG
@@ -11,15 +12,15 @@ import seedu.address.storage.OnlineStorage;
 public class OnlineBackupEvent extends BaseEvent {
 
     public final OnlineStorage.Type target;
-    public final ReadOnlyAddressBook data;
-    public final String fileName;
+    public final ReadOnlyAddressBook addressData;
+    public final ReadOnlyExpenseBook expenseData;
     public final Optional<String> authToken;
 
-    public OnlineBackupEvent(OnlineStorage.Type target, ReadOnlyAddressBook data,
-                             String fileName, Optional<String> authToken) {
+    public OnlineBackupEvent(OnlineStorage.Type target, ReadOnlyAddressBook addressData,
+                             ReadOnlyExpenseBook expenseData, Optional<String> authToken) {
         this.target = target;
-        this.data = data;
-        this.fileName = fileName;
+        this.addressData = addressData;
+        this.expenseData = expenseData;
         this.authToken = authToken;
     }
 

@@ -19,40 +19,49 @@ import seedu.address.commons.events.model.AddressBookChangedEvent;
 import seedu.address.commons.events.model.AddressBookLocalBackupEvent;
 import seedu.address.commons.events.model.AddressBookLocalRestoreEvent;
 import seedu.address.commons.events.model.AddressBookOnlineRestoreEvent;
+import seedu.address.commons.events.model.ExpenseBookOnlineRestoreEvent;
 import seedu.address.commons.events.model.UserPrefsChangedEvent;
 import seedu.address.commons.events.storage.OnlineBackupSuccessResultEvent;
+import seedu.address.commons.events.model.ExpenseBookChangedEvent;
+import seedu.address.commons.events.model.ExpenseBookLocalBackupEvent;
+import seedu.address.commons.events.storage.DataRestoreExceptionEvent;
 import seedu.address.commons.events.ui.NewResultAvailableEvent;
 import seedu.address.model.event.Event;
+import seedu.address.model.expense.Expense;
 import seedu.address.model.person.Person;
 import seedu.address.model.task.Task;
 import seedu.address.storage.OnlineStorage;
 
 /**
- * Represents the in-memory model of the address book data.
+ * Represents the in-memory model of the address book addressData.
  */
 public class ModelManager extends ComponentManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
 
     private final VersionedAddressBook versionedAddressBook;
+    private final VersionedExpenseBook versionedExpenseBook;
     private final FilteredList<Person> filteredPersons;
+    private final FilteredList<Expense> filteredExpenses;
     private final UserPrefs userPrefs;
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
      */
-    public ModelManager(ReadOnlyAddressBook addressBook, UserPrefs userPrefs) {
+    public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyExpenseBook expenseBook, UserPrefs userPrefs) {
         super();
         requireAllNonNull(addressBook, userPrefs);
 
         logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
 
         versionedAddressBook = new VersionedAddressBook(addressBook);
+        versionedExpenseBook = new VersionedExpenseBook(expenseBook);
         filteredPersons = new FilteredList<>(versionedAddressBook.getPersonList());
+        filteredExpenses = new FilteredList<>(versionedExpenseBook.getExpenseList());
         this.userPrefs = userPrefs;
     }
 
     public ModelManager() {
-        this(new AddressBook(), new UserPrefs());
+        this(new AddressBook(), new ExpenseBook(), new UserPrefs());
     }
 
     @Override
@@ -60,6 +69,13 @@ public class ModelManager extends ComponentManager implements Model {
         versionedAddressBook.resetData(newData);
         indicateAddressBookChanged();
     }
+
+    @Override
+    public void resetData(ReadOnlyExpenseBook newData) {
+        versionedExpenseBook.resetData(newData);
+        indicateExpenseBookChanged();
+    }
+
 
     @Override
     public ReadOnlyAddressBook getAddressBook() {
@@ -170,9 +186,21 @@ public class ModelManager extends ComponentManager implements Model {
     }
 
     @Override
+    public void backupExpenseBookLocal(Path backupPath) {
+        indicateExpenseBookBackupRequest(backupPath);
+    }
+
+
+    @Override
     public void restoreAddressBook(ReadOnlyAddressBook restoredAddressBook) {
         versionedAddressBook.resetData(restoredAddressBook);
         Platform.runLater(() -> indicateAddressBookChanged("Address Book Data Restored"));
+    }
+
+    @Override
+    public void restoreExpenseBook(ReadOnlyExpenseBook restoredExpenseBook) {
+        versionedExpenseBook.resetData(restoredExpenseBook);
+        Platform.runLater(() -> indicateExpenseBookChanged("Expense Book Data Restored"));
     }
 
     @SuppressWarnings("unused")
@@ -193,7 +221,14 @@ public class ModelManager extends ComponentManager implements Model {
     @Subscribe
     public void handleOnlineBackupSuccessResultEvent(OnlineBackupSuccessResultEvent event) {
         logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring address book from online storage"));
-        handleOnlineBackupSuccessResult(event.target, event.ref);
+        handleOnlineBackupSuccessResult(event.target, event.targetBook, event.ref);
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void handleExpenseBookOnlineRestoreEvent(ExpenseBookOnlineRestoreEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring expense book from online storage"));
+        restoreExpenseBook(event.data);
     }
 
     /**
@@ -202,15 +237,27 @@ public class ModelManager extends ComponentManager implements Model {
      * @param target {@code OnlineStorage.Type}
      * @param ref Reference object returned from successful online backup callback
      */
-    private void handleOnlineBackupSuccessResult(OnlineStorage.Type target, String ref) {
+    private void handleOnlineBackupSuccessResult(OnlineStorage.Type target, UserPrefs.TargetBook targetBook, String ref) {
         switch (target) {
         case GITHUB:
         default:
-            userPrefs.setAddressBookGistId(ref);
+            updateRelevantUserPrefs(targetBook, ref);
         }
         raise(new UserPrefsChangedEvent(userPrefs));
     }
 
+    private void updateRelevantUserPrefs(UserPrefs.TargetBook targetBook  ,String ref) {
+        switch (targetBook) {
+        case AddressBook:
+            userPrefs.setAddressBookGistId(ref);
+            break;
+        case ExpenseBook:
+            userPrefs.setExpenseBookGistId(ref);
+            break;
+        default:
+            throw (new IllegalStateException("Reached illegal flow of code."));
+        }
+    }
     //@@author
 
     //@@author luhan02
@@ -274,4 +321,94 @@ public class ModelManager extends ComponentManager implements Model {
                 && filteredPersons.equals(other.filteredPersons);
     }
 
+    //@@author ChenSongJian
+    //=========== Expense =================================================================================
+
+    @Override
+    public ReadOnlyExpenseBook getExpenseBook() {
+        return versionedExpenseBook;
+    }
+
+    /** Raises an event to indicate the model has changed */
+    private void indicateExpenseBookChanged() {
+        raise(new ExpenseBookChangedEvent(versionedExpenseBook));
+    }
+
+    //@@author QzSG
+    /** Raises an event to indicate the model has changed with custom message*/
+    private void indicateExpenseBookChanged(String message) {
+        raise(new ExpenseBookChangedEvent(versionedExpenseBook));
+        raise(new NewResultAvailableEvent(message));
+    }
+
+    /** Raises an event to indicate the request to backup model to persistent storage*/
+    private void indicateExpenseBookBackupRequest(Path backupPath) {
+        raise(new ExpenseBookLocalBackupEvent(versionedExpenseBook, backupPath));
+    }
+
+    //@@author ChenSongJian
+
+    @Override
+    public void addExpense(Expense expense) {
+        versionedExpenseBook.addExpense(expense);
+        updateFilteredExpenseList(PREDICATE_SHOW_ALL_EXPENSES);
+        indicateExpenseBookChanged();
+    }
+
+    @Override
+    public void deleteExpense(Expense target) {
+        versionedExpenseBook.removeExpense(target);
+        indicateExpenseBookChanged();
+    }
+
+    @Override
+    public void updateExpense(Expense target, Expense editedExpense) {
+        requireAllNonNull(target, editedExpense);
+
+        versionedExpenseBook.updateExpense(target, editedExpense);
+        indicateExpenseBookChanged();
+    }
+
+    /**
+     * Returns an unmodifiable view of the list of {@code Expense} backed by the internal list of
+     * {@code versionedExpenseBook}
+     */
+    @Override
+    public ObservableList<Expense> getFilteredExpenseList() {
+        return FXCollections.unmodifiableObservableList(filteredExpenses);
+    }
+
+    @Override
+    public void updateFilteredExpenseList(Predicate<Expense> predicate) {
+        requireNonNull(predicate);
+        filteredExpenses.setPredicate(predicate);
+    }
+
+    @Override
+    public boolean canUndoExpenseBook() {
+        return versionedExpenseBook.canUndo();
+    }
+
+    @Override
+    public boolean canRedoExpenseBook() {
+        return versionedExpenseBook.canRedo();
+    }
+
+    @Override
+    public void undoExpenseBook() {
+        versionedExpenseBook.undo();
+        indicateExpenseBookChanged();
+    }
+
+    @Override
+    public void redoExpenseBook() {
+        versionedExpenseBook.redo();
+        indicateExpenseBookChanged();
+    }
+
+    @Override
+    public void commitExpenseBook() {
+        versionedExpenseBook.commit();
+    }
+    //@@author
 }

@@ -82,14 +82,14 @@ public abstract class AddressBookSystemTest {
     }
 
     /**
-     * Returns the data to be loaded into the file in {@link #getDataFileLocation()}.
+     * Returns the addressData to be loaded into the file in {@link #getDataFileLocation()}.
      */
     protected AddressBook getInitialData() {
         return TypicalPersons.getTypicalAddressBook();
     }
 
     /**
-     * Returns the directory of the data file.
+     * Returns the directory of the addressData file.
      */
     protected Path getDataFileLocation() {
         return TestApp.SAVE_LOCATION_FOR_TESTING;

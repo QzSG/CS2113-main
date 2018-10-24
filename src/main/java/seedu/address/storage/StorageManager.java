@@ -18,8 +18,11 @@ import seedu.address.commons.events.model.AddressBookChangedEvent;
 import seedu.address.commons.events.model.AddressBookLocalBackupEvent;
 import seedu.address.commons.events.model.AddressBookLocalRestoreEvent;
 import seedu.address.commons.events.model.AddressBookOnlineRestoreEvent;
+import seedu.address.commons.events.model.ExpenseBookOnlineRestoreEvent;
 import seedu.address.commons.events.model.UserPrefsChangedEvent;
 import seedu.address.commons.events.storage.DataRestoreExceptionEvent;
+import seedu.address.commons.events.model.ExpenseBookChangedEvent;
+import seedu.address.commons.events.model.ExpenseBookLocalBackupEvent;
 import seedu.address.commons.events.storage.DataSavingExceptionEvent;
 import seedu.address.commons.events.storage.LocalRestoreEvent;
 import seedu.address.commons.events.storage.OnlineBackupEvent;
@@ -27,27 +30,36 @@ import seedu.address.commons.events.storage.OnlineBackupSuccessResultEvent;
 import seedu.address.commons.events.storage.OnlineRestoreEvent;
 import seedu.address.commons.events.ui.NewResultAvailableEvent;
 import seedu.address.commons.exceptions.DataConversionException;
+import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.exceptions.OnlineBackupFailureException;
 import seedu.address.commons.util.XmlUtil;
 import seedu.address.model.AddressBook;
+import seedu.address.model.ExpenseBook;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.model.ReadOnlyExpenseBook;
 import seedu.address.model.UserPrefs;
+
+import javax.xml.bind.JAXBException;
 
 
 /**
- * Manages storage of AddressBook data in local storage.
+ * Manages storage of AddressBook addressData in local storage.
  */
 public class StorageManager extends ComponentManager implements Storage {
 
     private static final Logger logger = LogsCenter.getLogger(StorageManager.class);
     private AddressBookStorage addressBookStorage;
+    private ExpenseBookStorage expenseBookStorage;
     private UserPrefsStorage userPrefsStorage;
 
     private GitHubStorage gitHubStorage;
 
-    public StorageManager(AddressBookStorage addressBookStorage, UserPrefsStorage userPrefsStorage) {
+    public StorageManager(AddressBookStorage addressBookStorage,
+                          ExpenseBookStorage expenseBookStorage,
+                          UserPrefsStorage userPrefsStorage) {
         super();
         this.addressBookStorage = addressBookStorage;
+        this.expenseBookStorage = expenseBookStorage;
         this.userPrefsStorage = userPrefsStorage;
     }
 
@@ -90,7 +102,7 @@ public class StorageManager extends ComponentManager implements Storage {
 
     @Override
     public Optional<ReadOnlyAddressBook> readAddressBook(Path filePath) throws DataConversionException, IOException {
-        logger.fine("Attempting to read data from file: " + filePath);
+        logger.fine("Attempting to read addressData from file: " + filePath);
         return addressBookStorage.readAddressBook(filePath);
     }
 
@@ -101,7 +113,7 @@ public class StorageManager extends ComponentManager implements Storage {
 
     @Override
     public void saveAddressBook(ReadOnlyAddressBook addressBook, Path filePath) throws IOException {
-        logger.fine("Attempting to write to data file: " + filePath);
+        logger.fine("Attempting to write to addressData file: " + filePath);
         addressBookStorage.saveAddressBook(addressBook, filePath);
     }
 
@@ -113,7 +125,7 @@ public class StorageManager extends ComponentManager implements Storage {
     @Override
     @Subscribe
     public void handleAddressBookChangedEvent(AddressBookChangedEvent event) {
-        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Local data changed, saving to file"));
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Local addressData changed, saving to file"));
         try {
             saveAddressBook(event.data);
         } catch (IOException e) {
@@ -124,7 +136,7 @@ public class StorageManager extends ComponentManager implements Storage {
     @Override
     @Subscribe
     public void handleAddressBookLocalBackupEvent(AddressBookLocalBackupEvent event) {
-        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Saving student planner data as backup"));
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Saving student planner addressData as backup"));
         try {
             backupAddressBook(event.data, event.filePath);
         } catch (IOException e) {
@@ -139,8 +151,8 @@ public class StorageManager extends ComponentManager implements Storage {
     @SuppressWarnings("unused")
     @Subscribe
     public void handleOnlineBackupEvent(OnlineBackupEvent event) {
-        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Saving data to online storage"));
-        backupOnline(event.target, event.data, event.fileName, event.authToken);
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Saving addressData to online storage"));
+        backupOnline(event.target, event.addressData, event.expenseData, event.authToken);
     }
 
     /*
@@ -149,8 +161,8 @@ public class StorageManager extends ComponentManager implements Storage {
     @SuppressWarnings("unused")
     @Subscribe
     public void handleOnlineRestoreEvent(OnlineRestoreEvent event) {
-        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring data from online storage"));
-        restoreOnline(event.target, event.ref, event.authToken);
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring addressData from online storage"));
+        restoreOnline(event.target, event.targetBook, event.ref, event.authToken);
     }
 
     /*
@@ -159,7 +171,7 @@ public class StorageManager extends ComponentManager implements Storage {
     @SuppressWarnings("unused")
     @Subscribe
     public void handleLocalRestoreEvent(LocalRestoreEvent event) {
-        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Retrieving student planner data from storage"));
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Retrieving student planner addressData from storage"));
         try {
             ReadOnlyAddressBook restoredReadOnlyAddressBook = readAddressBook(event.path).get();
             raise(new AddressBookLocalRestoreEvent(restoredReadOnlyAddressBook));
@@ -171,17 +183,16 @@ public class StorageManager extends ComponentManager implements Storage {
     /**
      * Performs online backup to supported online storage
      * @param target {@code OnlineStorage.Type} such as GITHUB
-     * @param data  {@code ReadOnlyAddressBook} data
+     * @param data  {@code ReadOnlyAddressBook} addressData
      * @param fileName Name of save backup file
      * @param authToken Personal Access Token for GitHub Authentication
      */
-    private void backupOnline(OnlineStorage.Type target, ReadOnlyAddressBook data,
-                              String fileName, Optional<String> authToken) {
+    private void backupOnline(OnlineStorage.Type target, ReadOnlyAddressBook addressData,
+                              ReadOnlyExpenseBook expenseData, Optional<String> authToken) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-        Task backupTask = getOnlineBackupTask(target, data, fileName, authToken);
-
-        executorService.submit(backupTask);
+        executorService.submit(getOnlineBackupTask(target, addressData, "AddressBook.bak", authToken));
+        executorService.submit(getOnlineBackupTask(target, expenseData, "ExpenseBook.bak", authToken));
     }
 
     /**
@@ -190,10 +201,10 @@ public class StorageManager extends ComponentManager implements Storage {
      * @param ref   Reference String to uniquely identify a file or a url to the backup resource.
      * @param authToken JWT or any other form of access token required by specific online backup service
      */
-    private void restoreOnline(OnlineStorage.Type target, String ref, Optional<String> authToken) {
+    private void restoreOnline(OnlineStorage.Type target, UserPrefs.TargetBook targetBook, String ref, Optional<String> authToken) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-        Task restoreTask = getOnlineRestoreTask(target, ref, authToken);
+        Task restoreTask = getOnlineRestoreTask(target, targetBook, ref, authToken);
 
         executorService.submit(restoreTask);
     }
@@ -203,28 +214,46 @@ public class StorageManager extends ComponentManager implements Storage {
      * @param path File path to local backup
      */
     private void restoreLocal(Path path) {
-
+        //TODO
     }
 
-    private Task getOnlineRestoreTask(OnlineStorage.Type target, String ref, Optional<String> authToken) {
-        Task restoreTask = new Task<AddressBook>() {
-            @Override public AddressBook call() throws Exception {
+    private Task getOnlineRestoreTask(OnlineStorage.Type target, UserPrefs.TargetBook targetBook,
+                                      String ref, Optional<String> authToken) {
+        Task restoreTask = new Task<>() {
+            @Override public Object call() throws Exception {
                 switch(target) {
                     case GITHUB:
                     default:
                         gitHubStorage = new GitHubStorage(
                             authToken.orElseThrow(() -> new OnlineBackupFailureException("Invalid auth "
                                     + "token received")));
-                        AddressBook restoredAddressBook = XmlUtil.getDataFromString(
-                                gitHubStorage.readContentFromGist(ref), XmlSerializableAddressBook.class).toModelType();
-                        return restoredAddressBook;
+                        if (targetBook == UserPrefs.TargetBook.AddressBook) {
+                            AddressBook restoredAddressBook = XmlUtil.getDataFromString(
+                                    gitHubStorage.readContentFromGist(targetBook, ref), XmlSerializableAddressBook.class).toModelType();
+                            return restoredAddressBook;
+                        }
+                        if (targetBook == UserPrefs.TargetBook.ExpenseBook) {
+                            ExpenseBook restoredExpenseBook = XmlUtil.getDataFromString(
+                                    gitHubStorage.readContentFromGist(targetBook, ref), XmlSerializableExpenseBook.class).toModelType();
+                            return restoredExpenseBook;
+                        }
+                        else {
+                            throw (new IllegalValueException("Invalid book data"));
+                        }
                 }
             }
         };
         restoreTask.setOnSucceeded(event -> {
-            raise(new AddressBookOnlineRestoreEvent(((Task<AddressBook>) restoreTask).getValue()));
+            if (targetBook == UserPrefs.TargetBook.AddressBook) {
+                raise(new AddressBookOnlineRestoreEvent(((Task<AddressBook>) restoreTask).getValue()));
+            }
+            else if (targetBook == UserPrefs.TargetBook.ExpenseBook) {
+                raise(new ExpenseBookOnlineRestoreEvent(((Task<ExpenseBook>) restoreTask).getValue()));
+            }
+
         });
         restoreTask.setOnFailed(event -> {
+            restoreTask.getException().printStackTrace();
             raise(new DataRestoreExceptionEvent((Exception) restoreTask.getException()));
         });
         return restoreTask;
@@ -233,12 +262,12 @@ public class StorageManager extends ComponentManager implements Storage {
     /**
      * Creates an online backup tasks based on {@code OnlineStorage.Type} and returns the created task.
      * @param target {@code OnlineStorage.Type} such as GITHUB
-     * @param data  {@code ReadOnlyAddressBook} data
+     * @param data  {@code Object} addressData
      * @param fileName Name of save backup file
      * @param authToken Personal Access Token for GitHub Authentication
      * @return
      */
-    private Task getOnlineBackupTask(OnlineStorage.Type target, ReadOnlyAddressBook data, String fileName,
+    private Task getOnlineBackupTask(OnlineStorage.Type target, Object data, String fileName,
                                      Optional<String> authToken) {
         Task backupTask = new Task<OnlineBackupSuccessResultEvent>() {
             @Override public OnlineBackupSuccessResultEvent call() throws Exception {
@@ -248,12 +277,12 @@ public class StorageManager extends ComponentManager implements Storage {
                         gitHubStorage = new GitHubStorage(
                                 authToken.orElseThrow(() -> new OnlineBackupFailureException("Invalid auth "
                                         + "token received")));
-                        URL url = gitHubStorage.saveContentToStorage(XmlUtil.convertDataToString(
-                                new XmlSerializableAddressBook(data)), fileName, "Address Book Backup");
+                        URL url = gitHubStorage.saveContentToStorage(handleBookData(data), fileName, "Student Book Backup");
                         String successMessage = String.format(GitHubStorage.SUCCESS_MESSAGE, url);
                         updateMessage(successMessage);
                         String ref = url.getPath().substring(1);
-                        return new OnlineBackupSuccessResultEvent(OnlineStorage.Type.GITHUB, ref);
+                        return new OnlineBackupSuccessResultEvent(OnlineStorage.Type.GITHUB,
+                                handleUserPrefsUpdateField(data), ref);
                 }
             }
         };
@@ -265,5 +294,87 @@ public class StorageManager extends ComponentManager implements Storage {
             raise(new DataSavingExceptionEvent((Exception) backupTask.getException()));
         });
         return backupTask;
+    }
+
+    private String handleBookData(Object data) throws IllegalValueException, JAXBException {
+        if (data instanceof ReadOnlyAddressBook) {
+            return XmlUtil.convertDataToString(
+                    new XmlSerializableAddressBook( (ReadOnlyAddressBook) data));
+        }
+        if (data instanceof ReadOnlyExpenseBook) {
+            return XmlUtil.convertDataToString(
+                    new XmlSerializableExpenseBook( (ReadOnlyExpenseBook) data));
+        }
+        else {
+            throw (new IllegalValueException("Invalid data provided"));
+        }
+    }
+
+    private UserPrefs.TargetBook handleUserPrefsUpdateField(Object data) throws IllegalValueException, JAXBException {
+        if (data instanceof ReadOnlyAddressBook) {
+            return UserPrefs.TargetBook.AddressBook;
+        }
+        if (data instanceof ReadOnlyExpenseBook) {
+            return UserPrefs.TargetBook.ExpenseBook;
+        }
+        else {
+            throw (new IllegalValueException("Invalid data provided"));
+        }
+    }
+
+    //============ Expense ===============================================================================
+
+    @Override
+    public Optional<ReadOnlyExpenseBook> readExpenseBook() throws DataConversionException, IOException {
+        return readExpenseBook(expenseBookStorage.getExpenseBookFilePath());
+    }
+
+    @Override
+    public Optional<ReadOnlyExpenseBook> readExpenseBook(Path filePath) throws DataConversionException, IOException {
+        logger.fine("Attempting to read addressData from file: " + filePath);
+        return expenseBookStorage.readExpenseBook(filePath);
+    }
+
+    @Override
+    public Path getExpenseBookFilePath() {
+        return expenseBookStorage.getExpenseBookFilePath();
+    }
+
+    @Override
+    public void saveExpenseBook(ReadOnlyExpenseBook expenseBook) throws IOException {
+        saveExpenseBook(expenseBook, expenseBookStorage.getExpenseBookFilePath());
+    }
+
+    @Override
+    public void saveExpenseBook(ReadOnlyExpenseBook expenseBook, Path filePath) throws IOException {
+        logger.fine("Attempting to write to addressData file: " + filePath);
+        expenseBookStorage.saveExpenseBook(expenseBook, filePath);
+    }
+
+    @Override
+    public void backupExpenseBook(ReadOnlyExpenseBook expenseBook, Path backupFilePath) throws IOException {
+        expenseBookStorage.backupExpenseBook(expenseBook, backupFilePath);
+    }
+
+    @Override
+    @Subscribe
+    public void handleExpenseBookChangedEvent(ExpenseBookChangedEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Local addressData changed, saving to file"));
+        try {
+            saveExpenseBook(event.data);
+        } catch (IOException e) {
+            raise(new DataSavingExceptionEvent(e));
+        }
+    }
+
+    @Override
+    @Subscribe
+    public void handleExpenseBookLocalBackupEvent(ExpenseBookLocalBackupEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Saving student planner addressData as backup"));
+        try {
+            backupExpenseBook(event.data, event.filePath);
+        } catch (IOException e) {
+            raise(new DataSavingExceptionEvent(e));
+        }
     }
 }

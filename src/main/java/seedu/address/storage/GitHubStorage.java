@@ -12,6 +12,7 @@ import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GitHub;
 
 import seedu.address.commons.exceptions.OnlineBackupFailureException;
+import seedu.address.model.UserPrefs;
 
 /**
  * A class to handle saving data to Github Gists.
@@ -58,10 +59,11 @@ public class GitHubStorage implements OnlineStorage {
      * @return
      * @throws IOException
      */
-    public String readContentFromGist(String gistId) throws IOException {
+    public String readContentFromGist(UserPrefs.TargetBook targetBook, String gistId) throws IOException {
         github_ = GitHub.connectUsingOAuth(authToken);
+        System.out.println(gistId);
         GHGist ghGist = github_.getGist(gistId);
-        GHGistFile gistFile = ghGist.getFile("AddressBook.bak");
+        GHGistFile gistFile = ghGist.getFile( String.format("%s.bak", targetBook.name()));
         return gistFile.getContent();
     }
 }

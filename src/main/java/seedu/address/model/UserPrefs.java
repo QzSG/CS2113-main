@@ -14,13 +14,25 @@ public class UserPrefs {
     private GuiSettings guiSettings;
     private Path addressBookFilePath;
     private Path addressBookBackupFilePath;
-
     private String addressBookGistId;
+
+    private Path expenseBookFilePath;
+    private Path expenseBookBackupFilePath;
+    private String expenseBookGistId;
+
 
     public UserPrefs() {
         setGuiSettings(500, 500, 0, 0);
         setAddressBookFilePath(getAddressBookFilePath());
         setAddressBookBackupFilePath(getAddressBookBackupFilePath());
+
+        setExpenseBookFilePath(getExpenseBookFilePath());
+        setExpenseBookBackupFilePath(getExpenseBookBackupFilePath());
+    }
+
+    public enum TargetBook {
+        AddressBook,
+        ExpenseBook
     }
 
     public GuiSettings getGuiSettings() {
@@ -59,6 +71,14 @@ public class UserPrefs {
         this.addressBookGistId = addressBookGistId;
     }
 
+    public String getExpenseBookGistId() {
+        return expenseBookGistId;
+    }
+
+    public void setExpenseBookGistId(String expenseBookGistId) {
+        this.expenseBookGistId = expenseBookGistId;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -87,10 +107,30 @@ public class UserPrefs {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Gui Settings : " + guiSettings.toString());
-        sb.append("\nLocal data file location : " + addressBookFilePath);
-        sb.append("\nLocal data backup file location : " + addressBookBackupFilePath);
-        sb.append("\nOnline data backup gist id : " + addressBookGistId);
+        sb.append("\nLocal addressData file location : " + addressBookFilePath);
+        sb.append("\nLocal addressData backup file location : " + addressBookBackupFilePath);
+        sb.append("\nOnline addressData backup gist id : " + addressBookGistId);
         return sb.toString();
     }
+
+    //=========== Expense =================================================================================
+
+    public Path getExpenseBookFilePath() {
+        return expenseBookFilePath == null ? Paths.get("data" , "expensebook.xml") : expenseBookFilePath;
+    }
+
+    public void setExpenseBookFilePath(Path expenseBookFilePath) {
+        this.expenseBookFilePath = expenseBookFilePath;
+    }
+
+    public Path getExpenseBookBackupFilePath() {
+        return expenseBookBackupFilePath == null ? Paths.get("data" , "expensebook.bak") : expenseBookBackupFilePath;
+    }
+
+    public void setExpenseBookBackupFilePath(Path expenseBookBackupFilePath) {
+        this.expenseBookBackupFilePath = expenseBookBackupFilePath;
+    }
+
+
 
 }
