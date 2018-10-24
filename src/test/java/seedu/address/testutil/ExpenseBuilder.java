@@ -33,7 +33,7 @@ public class ExpenseBuilder {
     }
 
     /**
-     * Initializes the ExpenseBuilder with the addressData of {@code expenseToCopy}.
+     * Initializes the ExpenseBuilder with the data of {@code expenseToCopy}.
      */
     public ExpenseBuilder(Expense expenseToCopy) {
 
