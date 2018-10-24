@@ -30,6 +30,9 @@ public class UserPrefs {
         setExpenseBookBackupFilePath(getExpenseBookBackupFilePath());
     }
 
+    /**
+     * Enum type used to identify specific data book to target
+     */
     public enum TargetBook {
         AddressBook,
         ExpenseBook

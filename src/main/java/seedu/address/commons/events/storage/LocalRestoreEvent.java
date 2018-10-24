@@ -9,10 +9,12 @@ import seedu.address.commons.events.BaseEvent;
 /** Indicates a request for local restore*/
 public class LocalRestoreEvent extends BaseEvent {
 
-    public final Path path;
+    public final Path addressBookPath;
+    public final Path expenseBookPath;
 
-    public LocalRestoreEvent(Path path) {
-        this.path = path;
+    public LocalRestoreEvent(Path addressBookPath, Path expenseBookPath) {
+        this.addressBookPath = addressBookPath;
+        this.expenseBookPath = expenseBookPath;
     }
 
     @Override

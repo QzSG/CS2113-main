@@ -56,7 +56,7 @@ public interface Storage extends AddressBookStorage, ExpenseBookStorage, UserPre
     void handleOnlineRestoreEvent(OnlineRestoreEvent ore);
 
     void handleLocalRestoreEvent(LocalRestoreEvent lre);
-    
+
     //=========== Expense =================================================================================
     @Override
     Path getExpenseBookFilePath();

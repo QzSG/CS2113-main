@@ -19,12 +19,12 @@ import seedu.address.commons.events.model.AddressBookChangedEvent;
 import seedu.address.commons.events.model.AddressBookLocalBackupEvent;
 import seedu.address.commons.events.model.AddressBookLocalRestoreEvent;
 import seedu.address.commons.events.model.AddressBookOnlineRestoreEvent;
+import seedu.address.commons.events.model.ExpenseBookChangedEvent;
+import seedu.address.commons.events.model.ExpenseBookLocalBackupEvent;
+import seedu.address.commons.events.model.ExpenseBookLocalRestoreEvent;
 import seedu.address.commons.events.model.ExpenseBookOnlineRestoreEvent;
 import seedu.address.commons.events.model.UserPrefsChangedEvent;
 import seedu.address.commons.events.storage.OnlineBackupSuccessResultEvent;
-import seedu.address.commons.events.model.ExpenseBookChangedEvent;
-import seedu.address.commons.events.model.ExpenseBookLocalBackupEvent;
-import seedu.address.commons.events.storage.DataRestoreExceptionEvent;
 import seedu.address.commons.events.ui.NewResultAvailableEvent;
 import seedu.address.model.event.Event;
 import seedu.address.model.expense.Expense;
@@ -194,13 +194,13 @@ public class ModelManager extends ComponentManager implements Model {
     @Override
     public void restoreAddressBook(ReadOnlyAddressBook restoredAddressBook) {
         versionedAddressBook.resetData(restoredAddressBook);
-        Platform.runLater(() -> indicateAddressBookChanged("Address Book Data Restored"));
+        Platform.runLater(() -> indicateAddressBookChanged("Data Restored"));
     }
 
     @Override
     public void restoreExpenseBook(ReadOnlyExpenseBook restoredExpenseBook) {
         versionedExpenseBook.resetData(restoredExpenseBook);
-        Platform.runLater(() -> indicateExpenseBookChanged("Expense Book Data Restored"));
+        Platform.runLater(() -> indicateExpenseBookChanged("Data Restored"));
     }
 
     @SuppressWarnings("unused")
@@ -208,6 +208,13 @@ public class ModelManager extends ComponentManager implements Model {
     public void handleAddressBookLocalRestoreEvent(AddressBookLocalRestoreEvent event) {
         logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring address book from local storage"));
         restoreAddressBook(event.readOnlyAddressBook);
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void handleExpenseBookLocalRestoreEvent(ExpenseBookLocalRestoreEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring expense book from local storage"));
+        restoreExpenseBook(event.readOnlyExpenseBook);
     }
 
     @SuppressWarnings("unused")
@@ -237,16 +244,22 @@ public class ModelManager extends ComponentManager implements Model {
      * @param target {@code OnlineStorage.Type}
      * @param ref Reference object returned from successful online backup callback
      */
-    private void handleOnlineBackupSuccessResult(OnlineStorage.Type target, UserPrefs.TargetBook targetBook, String ref) {
+    private void handleOnlineBackupSuccessResult(OnlineStorage.Type target, UserPrefs.TargetBook targetBook,
+                                                 String ref) {
         switch (target) {
         case GITHUB:
         default:
-            updateRelevantUserPrefs(targetBook, ref);
+            updateGithubRelevantUserPrefs(targetBook, ref);
         }
         raise(new UserPrefsChangedEvent(userPrefs));
     }
 
-    private void updateRelevantUserPrefs(UserPrefs.TargetBook targetBook  ,String ref) {
+    /**
+     * Updates the relevant fields inside User Preferences based on the {@code targetBook}
+     * @param targetBook AddressBook, ExpenseBook, etc
+     * @param ref Reference Field depending on online service
+     */
+    private void updateGithubRelevantUserPrefs(UserPrefs.TargetBook targetBook, String ref) {
         switch (targetBook) {
         case AddressBook:
             userPrefs.setAddressBookGistId(ref);

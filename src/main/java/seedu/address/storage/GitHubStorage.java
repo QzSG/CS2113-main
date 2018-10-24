@@ -63,7 +63,7 @@ public class GitHubStorage implements OnlineStorage {
         github_ = GitHub.connectUsingOAuth(authToken);
         System.out.println(gistId);
         GHGist ghGist = github_.getGist(gistId);
-        GHGistFile gistFile = ghGist.getFile( String.format("%s.bak", targetBook.name()));
+        GHGistFile gistFile = ghGist.getFile(String.format("%s.bak", targetBook.name()));
         return gistFile.getContent();
     }
 }

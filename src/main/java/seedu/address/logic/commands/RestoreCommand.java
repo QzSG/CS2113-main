@@ -53,8 +53,9 @@ public class RestoreCommand extends Command {
     public CommandResult execute(Model model, CommandHistory history) {
         requireNonNull(model);
         if (isLocal) {
-            EventsCenter.getInstance().post(new LocalRestoreEvent(retrievePath(model)));
-            return new CommandResult(String.format(MESSAGE_SUCCESS, retrievePath(model).toString()));
+            EventsCenter.getInstance().post(new LocalRestoreEvent(
+                    retrieveAddressBookPath(model), retrieveExpenseBookPath(model)));
+            return new CommandResult(String.format(MESSAGE_SUCCESS, retrievePath(model).getParent().toString()));
         } else {
             if (target == OnlineStorage.Type.GITHUB) {
                 String gistId = model.getUserPrefs().getAddressBookGistId();
@@ -66,8 +67,7 @@ public class RestoreCommand extends Command {
                 EventsCenter.getInstance().post(new OnlineRestoreEvent(target, UserPrefs.TargetBook.ExpenseBook,
                         model.getUserPrefs().getExpenseBookGistId(), authToken));
                 return new CommandResult(String.format(MESSAGE_SUCCESS, "GitHub Gists"));
-            }
-            else {
+            } else {
                 return new CommandResult(MESSAGE_INVALID);
             }
         }
@@ -77,6 +77,15 @@ public class RestoreCommand extends Command {
     private Path retrievePath(Model model) {
         return backupPath.orElse(model.getUserPrefs().getAddressBookBackupFilePath());
     }
+
+    private Path retrieveAddressBookPath(Model model) {
+        return model.getUserPrefs().getAddressBookBackupFilePath();
+    }
+
+    private Path retrieveExpenseBookPath(Model model) {
+        return model.getUserPrefs().getExpenseBookBackupFilePath();
+    }
+
 
     @Override
     public boolean equals(Object other) {

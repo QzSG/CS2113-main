@@ -16,7 +16,8 @@ public class OnlineRestoreEvent extends BaseEvent {
     public final String ref;
     public final Optional<String> authToken;
 
-    public OnlineRestoreEvent(OnlineStorage.Type target, UserPrefs.TargetBook targetBook, String ref, Optional<String> authToken) {
+    public OnlineRestoreEvent(OnlineStorage.Type target, UserPrefs.TargetBook targetBook,
+                              String ref, Optional<String> authToken) {
         this.target = target;
         this.targetBook = targetBook;
         this.ref = ref;
