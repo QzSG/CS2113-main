@@ -66,7 +66,6 @@ public class GitHubStorage implements OnlineStorage {
      */
     public String readContentFromGist(UserPrefs.TargetBook targetBook, String gistId) throws IOException {
         github_ = GitHub.connectUsingOAuth(authToken);
-        System.out.println(gistId);
         GHGist ghGist = github_.getGist(gistId);
         GHGistFile gistFile = ghGist.getFile(String.format("%s.bak", targetBook.name()));
         return gistFile.getContent();
