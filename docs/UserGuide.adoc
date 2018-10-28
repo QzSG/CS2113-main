@@ -95,6 +95,64 @@ Edits the body of the 1st task to be `Need two pens`.
 * `edit 2 t/` +
 Edits the 2nd task by clearing all existing tags.
 
+=== Locating contacts by address: `findaddress`
+
+Finds contacts whose address or body contain any of the given keywords. +
+Format: `findaddress KEYWORD [MORE_KEYWORDS]`
+
+****
+* The search is case insensitive. e.g `college` will match `College`
+* The order of the keywords does not matter. e.g. `Ave College` will match `College Ave`
+* Only the address and body is searched.
+* Only full words will be matched e.g. `Colle` will not match `College`
+* Contacts matching at least one keyword will be returned (i.e. `OR` search). e.g. `College Tampines` will return all contacts with address containing any of the keywords college or tampines
+****
+
+Examples:
+
+* `findaddress College` +
+Returns `college` and `College ave e`
+* `findaddress college lorong tampines` +
+Returns any contacts having an address or body that contains `college`, `lorong`, or `tampines`
+
+=== Locating contacts by name: `findname`
+
+Finds contacts whose name or body contain any of the given keywords. +
+Format: `findname KEYWORD [MORE_KEYWORDS]`
+
+****
+* The search is case insensitive. e.g `mario` will match `Mario`
+* The order of the keywords does not matter. e.g. `Gonzalez Mario` will match `Mario Gonzalez`
+* Only the name and body is searched.
+* Only full words will be matched e.g. `Gonza` will not match `Gonzalez`
+* Contacts matching at least one keyword will be returned (i.e. `OR` search). e.g. `Hans Bo` will return `Hans Gruber`, `Bo Yang`
+****
+
+Examples:
+
+* `findaddress Mario` +
+Returns `mario` and `Mario Gonzalez`
+* `findaddress mario alex david` +
+Returns any contacts having names or body that contains `mario`, `alex`, or `david`
+
+=== Locating contacts by phone: `findphone`
+
+Finds contacts whose phone number or body contain any of the given keywords. +
+Format: `findname KEYWORD [MORE_KEYWORDS]`
+
+****
+* Only the phone number and body is searched.
+* Only full phone numbers will be matched e.g. `98835` will not match `98835761`
+* Contacts matching at least one keyword will be returned (i.e. `OR` search). e.g. `98835761 87438807 ` will return the contacts with phone number 98835761 or 87438807.
+****
+
+Examples:
+
+* `findaddress 98835761` +
+Returns `98835761` and the contact with that phone number
+* `findaddress 98835761 87438807` +
+Returns any contacts having phone number or body that contains `98835761`, or `87438807`
+
 === Locating tasks by name: `find`
 
 Finds tasks whose names or body contain any of the given keywords. +
@@ -205,6 +263,128 @@ Format: `clear`
 Exits the program. +
 Format: `exit`
 
+//@@author ChenSongJian
+// tag::expense[]
+=== Adding an expense: `addExpense`
+
+Adds an expense to the expense book +
+Format: `addExpense c/CATEGORY v/VALUE d/DATE [t/TAG]...`
+
+[TIP]
+An expense can have any number of tags (including 0)
+
+Examples:
+
+* `addExpense c/taobao v/1111.11 d/11/11/2018`
+* `addExpense c/Lunch v/6.66 d/10/10/2018 t/nomorecaipng t/fishtooexpensive`
+
+=== Editing an expense : `editExpense`
+
+Edits an existing expense in the Expense book. +
+Format: `edit INDEX [c/CATEGORY] [v/VALUE] [d/DATE] [t/TAG]...`
+
+****
+* Edits the expense at the specified `INDEX`. The index refers to the index number shown in the displayed expense list. The index *must be a positive integer* 1, 2, 3, ...
+* At least one of the optional fields must be provided.
+* Existing values will be updated to the input values.
+* When editing tags, the existing tags of the person will be removed i.e adding of tags is not cumulative.
+* You can remove all the expense's tags by typing `t/` without specifying any tags after it.
+****
+
+Examples:
+
+* `editExpense 1 v/998.00 +
+Edits the value of expense of the 1st expense
+* `editExpense 2 c/food t/lunch` +
+Edits the category of the 2nd person to be `food`, remove the existing tags and add new tag.
+
+=== Deleting an expense : `deleteExpense`
+
+Deletes the specified expense from the expense book. +
+Format: `deleteExpense INDEX`
+
+****
+* Deletes the expense at the specified `INDEX`.
+* The index refers to the index number shown in the displayed expense list.
+* The index *must be a positive integer* 1, 2, 3, ...
+****
+
+Examples:
+
+* `delete 2` +
+Deletes the 2nd expense in the expense book.
+
+=== Undoing previous command : `undoExpense`
+
+Restores the expense book to the state before the previous _undoable_ command was executed. +
+Format: `undoExpense`
+
+[NOTE]
+====
+Undoable commands: those commands that modify the expense book's content (`addExpense`, `deleteExpense`, `editExpense` and `clearExpense`).
+====
+
+Examples:
+
+* `deleteExpense 1` +
+`undoExpense` (reverses the `deleteExpense 1` command) +
+
+* `expenseTrend` +
+`undoExpense` +
+The `undoExpense` command fails as there are no undoable commands executed previously.
+
+* `deleteExpense 1` +
+`clearExpense` +
+`undoExpense` (reverses the `clearExpense` command) +
+`undoExpense` (reverses the `deleteExpense 1` command) +
+
+=== Redoing the previously undone command : `redoExpense`
+
+Reverses the most recent `undoExpense` command. +
+Format: `redoExpense`
+
+Examples:
+
+* `deleteExpense 1` +
+`undoExpense` (reverses the `deleteExpense 1` command) +
+`redoExpense` (reapplies the `deleteExpense 1` command) +
+
+* `deleteExpense 1` +
+`redoExpense` +
+The `redoExpense` command fails as there are no `undoExpense` commands executed previously.
+
+* `deleteExpense 1` +
+`clearExpense` +
+`undoExpense` (reverses the `clearExpense` command) +
+`undoExpense` (reverses the `deleteExpense 1` command) +
+`redoExpense` (reapplies the `deleteExpense 1` command) +
+`redoExpense` (reapplies the `clearExpense` command)
+
+=== Clearing all expense entries : `clearExpense`
+
+Clears all entries from the expense book. +
+Format: `clearExpense
+
+=== Displaying expense trend : `expenseTrend`
+Displays a bar chart of the monthly expense value occurred the past 6 months in a new window +
+Format: `expenseTrend`
+
+=== Displaying monthly expense : `monthlyExpense`
+Displays a pie chart of the expense value for each category occurred in the selected month in a new window +
+format: `monthlyExpense MM/YYYY`
+
+****
+* Displays the monthly expense for the specified `MM/YYYY`.
+* The month *must be a valid month and in MM/YYYY format* 01/0001, 10/2018 ...
+****
+
+Examples:
+
+* `monthlyExpense 11/2018` +
+Displays the monthly expense data for November 2018 in a new window
+// end::expense[]
+//@@author
+
 === Saving the data
 
 Schedule planner data are saved in the hard disk automatically after any command that changes the data. +
@@ -215,11 +395,11 @@ There is no need to save manually.
 Alert user when a deadline is due
 
 // tag::databackup[]
-=== Backup data :`backup`
+=== Backup data : `backup`
 
 Allow user to backup data _locally_ or to online services.
 
-Format: `backup [PATH] | [GITHUB ACCESS_TOKEN]`
+Format: `backup | [GITHUB ACCESS_TOKEN]`
 
 ****
 * For GitHub online backup, a personal access token must be provided in `ACCESS_TOKEN`
@@ -228,19 +408,17 @@ Format: `backup [PATH] | [GITHUB ACCESS_TOKEN]`
 Examples:
 
 * `backup` +
-Creates a local backup to the default backup path in `preferences.json`.
-* `backup C:\backup\backup.bak` +
-Creates a local backup to the provided path `C:\backup\backup.bak`.
+Creates a local backup to the backup paths in `preferences.json`.
 * `backup github ACCESS_TOKEN_HERE` +
 Creates an online backup to GitHub Gists using the provided personal access token.
 // end::databackup[]
 
 // tag::datarestore[]
-=== Restore data :`restore`
+=== Restore data : `restore`
 
 Allow user to restore data backups _locally_ or from online services.
 
-Format: `restore [PATH] | [GITHUB ACCESS_TOKEN]`
+Format: `restore | [GITHUB ACCESS_TOKEN]`
 
 ****
 * For GitHub online restore, a personal access token must be provided in `ACCESS_TOKEN`
@@ -249,18 +427,14 @@ Format: `restore [PATH] | [GITHUB ACCESS_TOKEN]`
 Examples:
 
 * `restore` +
-Restores Student Planner data using local backup in default backup path inside `preferences.json`.
-* `restore C:\backup\backup.bak` +
-Restores Student Planner data using the provided backup file path `C:\backup\backup.bak`.
+Restores Student Planner data using local backups in backup paths inside `preferences.json`.
 * `restore github ACCESS_TOKEN_HERE` +
 Restores Student Planner data on GitHub Gists using the provided personal access token.
-// end::databackup[]
-
 
 === Setup or restore backup data `[coming in v1.3]`
 Allow user to setup backup settings (setup cloud services like GitHub gists or Google Drive, backup location) by calling `backup doctor`
 
-// end::databackup[]
+// end::datarestore[]
 
 // tag::dataencryption[]
 === Encrypting data files `[coming in v2.0]`
@@ -273,6 +447,7 @@ Application will prompt for decryption password if encryption is enabled
 
 *Q*: How do I transfer my data to another Computer? +
 *A*: Install the app in the other computer and overwrite the empty data file it creates with the file that contains the data of your previous schedule planner folder.
+Alternatively you can perform a backup to a supported online service like GitHub and restore form another computer after changing the relevant gist ids in your preferences.json file
 
 == Command Summary
 
@@ -291,3 +466,23 @@ e.g.`select 2`
 * *History* : `history`
 * *Undo* : `undo`
 * *Redo* : `redo`
+* *Backup* : `backup | [GITHUB ACCESS_TOKEN]`
+e.g. `backup GITHUB MY_ACCESS_TOKEN`
+* *Restore* : `restore | [GITHUB ACCESS_TOKEN]`
+e.g. `restore GITHUB MY_ACCESS_TOKEN`
+
+//@@author ChenSongJian
+* *AddExpense* : `addExpense c/CATEGORY v/VALUE d/DATE [t/TAG]...` +
+e.g. `addExpense c/Food v/11.11 d/11/11/2018 t/KFC t/lunch t/fat`
+* *ClearExpense* : `clearExpense`
+* *DeleteExpense* : `deleteExpense INDEX` +
+e.g. `deleteExpense 3`
+* *EditExpense* : `editExpense INDEX [c/CATEGORY] [v/VALUE] [d/DATE] [t/TAG]...` +
+e.g. `editExpense 2 c/Travel v/998.00`
+* *UndoExpense* : `undoExpense`
+* *RedoExpense* : `redoExpense`
+* *ExpenseTrend* : `expenseTrend`
+* *MonthlyExpense* : `monthlyExpense MM/YYYY` +
+e.g. `monthlyExpense 11/2018`
+//@@author
+
