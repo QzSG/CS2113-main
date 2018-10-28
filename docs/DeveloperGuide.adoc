@@ -446,10 +446,10 @@ backupTask.setOnSucceeded(event -> {
     raise((OnlineBackupSuccessResultEvent) backupTask.getValue());
 });
 ```
-. Inside each of the backup tasks, the specific online service that implements the `OnlineStorage` interface will be called.
+. The specific online service that implements the `OnlineStorage` interface will be called.
 In this example, `GithubStorage#saveContentToStorage` is called for the respective data books which utilises a third party Github API Library
  to create and save gists to GitHub.
-. When each backup task is completed, a `OnlineBackupSuccessResultEvent` is raised by the `setOnSucceeded` task handler.
+. When each backup task for each book data is completed, a `OnlineBackupSuccessResultEvent` is raised by the `setOnSucceeded` task handler.
 . `Model#handleOnlineBackupSuccessResultEvent` receives the event and updates the `UserPrefs` model based on the gist id returned from the successful backup
 . A `UserPrefsChangedEvent` is fired which is handled by `Storage` which saves the updated `UserPrefs` to storage.
 . A `NewNotificationAvailableEvent` is also fired. This event is handled by the `UiManager` which calls `showNotification` that creates a new notification and shows
