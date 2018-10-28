@@ -41,9 +41,6 @@ public class BackupCommand extends Command {
         if (isLocal && authToken.isPresent()) {
             throw new AssertionError("This should never happen. authToken should not exist if isLocal is true.");
         }
-        if (isLocal && !backupPath.isPresent()) {
-            throw new AssertionError("This should never happen. backupPath should always exist if isLocal is true.");
-        }
         if (!isLocal && !authToken.isPresent()) {
             throw new AssertionError("This should never happen. authToken should always exist if isLocal is false.");
         }

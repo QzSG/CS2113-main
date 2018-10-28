@@ -48,14 +48,6 @@ public class BackupCommandTest {
     }
 
     @Test
-    public void execute_malformedLocalBackupCommandInit_invalidPathThrows() {
-        thrown.expect(AssertionError.class);
-        new BackupCommand(
-                Optional.empty(), true,
-                Optional.empty(), Optional.empty());
-    }
-
-    @Test
     public void execute_malformedLocalBackupCommandInit_tokenExistsThrows() {
         thrown.expect(AssertionError.class);
         new BackupCommand(
