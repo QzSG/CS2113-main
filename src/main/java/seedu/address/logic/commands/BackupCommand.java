@@ -38,6 +38,15 @@ public class BackupCommand extends Command {
      */
     public BackupCommand(Optional<Path> backupPath, boolean isLocal,
                          Optional<OnlineStorage.Type> target, Optional<String> authToken) {
+        if (isLocal && authToken.isPresent()) {
+            throw new AssertionError("This should never happen. authToken should not exist if isLocal is true.");
+        }
+        if (isLocal && !backupPath.isPresent()) {
+            throw new AssertionError("This should never happen. backupPath should always exist if isLocal is true.");
+        }
+        if (!isLocal && !authToken.isPresent()) {
+            throw new AssertionError("This should never happen. authToken should always exist if isLocal is false.");
+        }
         this.backupPath = backupPath;
         this.isLocal = isLocal;
         this.target = target.orElse(OnlineStorage.Type.GITHUB);
@@ -62,6 +71,7 @@ public class BackupCommand extends Command {
 
     }
 
+    /*
     @SuppressWarnings("unused")
     private Path retrievePath(Model model) {
         return backupPath.orElse(model.getUserPrefs().getAddressBookBackupFilePath());
@@ -75,7 +85,7 @@ public class BackupCommand extends Command {
     @SuppressWarnings("unused")
     private Path retrieveExpenseBookPath(Model model) {
         return model.getUserPrefs().getExpenseBookBackupFilePath();
-    }
+    }*/
 
     @Override
     public boolean equals(Object other) {
