@@ -60,12 +60,22 @@ public class RestoreCommand extends Command {
 
     }
 
+    /**
+     * Raises event to indicate new local restore command
+     * @param model
+     * @return
+     */
     private CommandResult localRestoreCommand(Model model) {
         EventsCenter.getInstance().post(new LocalRestoreEvent(
                 retrieveAddressBookPath(model), retrieveExpenseBookPath(model)));
         return new CommandResult(String.format(MESSAGE_SUCCESS, retrievePath(model).getParent().toString()));
     }
 
+    /**
+     * Raises event to indicate new online restore command
+     * @param model
+     * @return
+     */
     private CommandResult onlineRestoreCommand(Model model) {
         if (target == OnlineStorage.Type.GITHUB) {
             String gistId = model.getUserPrefs().getAddressBookGistId();
