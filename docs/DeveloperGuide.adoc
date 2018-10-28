@@ -375,10 +375,13 @@ Step 6. The user now decides that the task added was a mistake, and decides to r
 The application supports both local and online backups
 
 ==== Backup Implementation
-A generic `OnlineStorage` interface must be implemented by all forms of Online backup services. This allows developers to easily add and extend the list of supported backup services by implementing a common set of methods.
-The current minimum set of methods that must be implemented is for backup, namely `OnlineStorage#saveContentToStorage`. Future iterations of code will enforce implementation of `OnlineStorage#loadContentFromStorage`.
+A `OnlineStorage` interface must be implemented by all forms of Online backup services. This allows developers to easily add and extend the list of supported backup services by implementing a common set of methods.
+The current minimum set of methods that must be implemented are
 
-For local backups, the existing classes provided by `XmlAddressBookStorage` are reused
+* `OnlineStorage#saveContentToStorage`.
+* `OnlineStorage#readContentFromStorage`.
+
+For local backups, the book specific `{Book}Storage` interface adapted from `AddressBookStorage` are implemented and used.
 
 ==== Command Flow
 When a user enters a backup or restore command for local backups or restoration. `Model#backupAddressBookLocal` will be called which calls `indicateAddressBookBackupRequest` that raises a `Model#AddressBookLocalBackupEvent`.

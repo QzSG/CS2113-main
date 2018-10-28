@@ -11,7 +11,6 @@ import org.kohsuke.github.GHGistBuilder;
 import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GitHub;
 
-import seedu.address.commons.exceptions.OnlineBackupFailureException;
 import seedu.address.model.UserPrefs;
 
 /**
@@ -30,7 +29,7 @@ public class GitHubStorage implements OnlineStorage {
     }
 
     @Override
-    public void saveContentToStorage(String content, String fileName) throws IOException, OnlineBackupFailureException {
+    public void saveContentToStorage(String content, String fileName) {
         throw new UnsupportedOperationException("This online storage does not "
                 + "support saveContentToStorage with 2 variables");
     }
@@ -45,6 +44,12 @@ public class GitHubStorage implements OnlineStorage {
         GHGistBuilder ghGistBuilder = buildGistFromContent(content, fileName, description);
         GHGist ghGist = ghGistBuilder.create();
         return ghGist.getHtmlUrl();
+    }
+
+    @Override
+    public String readContentFromStorage(UserPrefs.TargetBook targetBook, String ref) throws IOException {
+        requireNonNull(ref);
+        return readContentFromGist(targetBook, ref);
     }
 
     private GHGistBuilder buildGistFromContent(String content, String fileName, String description) {
