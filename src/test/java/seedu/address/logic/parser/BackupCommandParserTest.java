@@ -26,7 +26,7 @@ public class BackupCommandParserTest {
 
     private BackupCommandParser parser = new BackupCommandParser();
 
-    BackupCommand expectedValidOnlineBackupCommand =
+    private BackupCommand expectedValidOnlineBackupCommand =
             new BackupCommand(Optional.empty(), false,
                     Optional.ofNullable(OnlineStorage.Type.GITHUB),
                     Optional.ofNullable("VALID_TOKEN"));
@@ -41,13 +41,13 @@ public class BackupCommandParserTest {
     }
 
     @Test
-    public void parse_onlineBack_noTokenArg_throws() {
+    public void parse_onlineBackupNoTokenArg_throws() {
         thrown.expect(IllegalArgumentException.class);
         assertParseSuccess(parser, " github", expectedValidOnlineBackupCommand);
     }
 
     @Test
-    public void parse_onlineBack_hasTokenArg_parsesPasses() {
+    public void parse_onlineBackupHasTokenArg_parsesPasses() {
         assertParseSuccess(parser, " github AUTH_TOKEN", expectedValidOnlineBackupCommand);
     }
 

@@ -48,7 +48,7 @@ public class BackupCommandTest {
     }
 
     @Test
-    public void execute_malformedLocalBackupCommandInit_invalidPath_throws() {
+    public void execute_malformedLocalBackupCommandInit_invalidPathThrows() {
         thrown.expect(AssertionError.class);
         new BackupCommand(
                 Optional.empty(), true,
@@ -56,7 +56,7 @@ public class BackupCommandTest {
     }
 
     @Test
-    public void execute_malformedLocalBackupCommandInit_tokenExists_throws() {
+    public void execute_malformedLocalBackupCommandInit_tokenExistsThrows() {
         thrown.expect(AssertionError.class);
         new BackupCommand(
                 Optional.ofNullable(model.getUserPrefs().getAddressBookBackupFilePath()), true,
@@ -64,7 +64,7 @@ public class BackupCommandTest {
     }
 
     @Test
-    public void execute_malformedOnlineBackupCommandInit_tokenNotExists_throws() {
+    public void execute_malformedOnlineBackupCommandInit_tokenNotExistsThrows() {
         thrown.expect(AssertionError.class);
         new BackupCommand(
                 Optional.empty(), false,
