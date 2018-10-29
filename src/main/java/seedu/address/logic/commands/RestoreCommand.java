@@ -31,6 +31,7 @@ public class RestoreCommand extends Command {
     public static final String MESSAGE_SUCCESS = "Restoring Backup from %s";
     public static final String MESSAGE_FAILURE = "Please perform an online backup using %s first or set relevant"
              + " settings in user prefs";
+    public static final String MESSAGE_FAILURE_SAMPLE = ": backup github [personal_access_token]";
     public static final String MESSAGE_INVALID = "Invalid online service provided";
     private Optional<Path> backupPath;
     private boolean isLocal;
@@ -42,6 +43,12 @@ public class RestoreCommand extends Command {
      */
     public RestoreCommand(Optional<Path> backupPath, boolean isLocal,
                           Optional<OnlineStorage.Type> target, Optional<String> authToken) {
+        if (isLocal && authToken.isPresent()) {
+            throw new AssertionError("This should never happen. authToken should not exist if isLocal is true.");
+        }
+        if (!isLocal && !authToken.isPresent()) {
+            throw new AssertionError("This should never happen. authToken should always exist if isLocal is false.");
+        }
         this.backupPath = backupPath;
         this.isLocal = isLocal;
         this.target = target.orElse(OnlineStorage.Type.GITHUB);
@@ -80,7 +87,7 @@ public class RestoreCommand extends Command {
         if (target == OnlineStorage.Type.GITHUB) {
             String gistId = model.getUserPrefs().getAddressBookGistId();
             if (gistId == null) {
-                return new CommandResult(String.format(MESSAGE_FAILURE, ": backup github [personal_access_token]"));
+                return new CommandResult(String.format(MESSAGE_FAILURE, MESSAGE_FAILURE_SAMPLE));
             }
             EventsCenter.getInstance().post(new OnlineRestoreEvent(target, UserPrefs.TargetBook.AddressBook,
                     model.getUserPrefs().getAddressBookGistId(), authToken));

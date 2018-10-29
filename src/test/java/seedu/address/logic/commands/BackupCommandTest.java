@@ -68,12 +68,8 @@ public class BackupCommandTest {
         BackupCommand command = new BackupCommand(
                 Optional.ofNullable(model.getUserPrefs().getAddressBookBackupFilePath()), true,
                 Optional.empty(), Optional.empty());
-        BackupCommand expectedCommand = new BackupCommand(
-                Optional.ofNullable(model.getUserPrefs().getAddressBookBackupFilePath()), true,
-                Optional.empty(), Optional.empty());
         CommandResult result = command.execute(model, new CommandHistory());
-        CommandResult expectedResult = expectedCommand.execute(expectedModel, new CommandHistory());
-        assertEquals(expectedResult.feedbackToUser, result.feedbackToUser);
+        assertEquals(String.format(BackupCommand.MESSAGE_SUCCESS, "local storage"), result.feedbackToUser);
     }
 
     @Test
@@ -81,11 +77,7 @@ public class BackupCommandTest {
         BackupCommand command = new BackupCommand(Optional.empty(), false,
                         Optional.ofNullable(OnlineStorage.Type.GITHUB),
                         Optional.ofNullable("VALID_TOKEN"));
-        BackupCommand expectedCommand = new BackupCommand(Optional.empty(), false,
-                        Optional.ofNullable(OnlineStorage.Type.GITHUB),
-                        Optional.ofNullable("VALID_TOKEN"));
         CommandResult result = command.execute(model, new CommandHistory());
-        CommandResult expectedResult = expectedCommand.execute(expectedModel, new CommandHistory());
-        assertEquals(expectedResult.feedbackToUser, result.feedbackToUser);
+        assertEquals(String.format(BackupCommand.MESSAGE_SUCCESS, "GitHub Gists"), result.feedbackToUser);
     }
 }
