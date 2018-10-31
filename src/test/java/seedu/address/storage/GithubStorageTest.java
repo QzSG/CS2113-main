@@ -14,7 +14,6 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.kohsuke.github.HttpException;
@@ -77,7 +76,6 @@ public class GithubStorageTest {
     }
 
     @Test
-    @DisabledIfEnvironmentVariable(named = "TRAVIS", matches = "true")
     public void readAddressBookContent_validGistIdInvalidContent_throws() throws Exception {
         assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         thrown.expect(NullPointerException.class); //Gist does not contain file named AddressBook.bak
