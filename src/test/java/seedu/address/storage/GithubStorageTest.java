@@ -23,7 +23,7 @@ import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyExpenseBook;
 import seedu.address.model.UserPrefs;
 
-@DisabledIfEnvironmentVariable(named = "TRAVIS", matches = "true")
+@DisabledIfEnvironmentVariable(named = "IS_TRAVIS", matches = "true")
 public class GithubStorageTest {
 
     private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data", "GithubStorageTest");
