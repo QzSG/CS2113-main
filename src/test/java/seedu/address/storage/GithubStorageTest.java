@@ -57,6 +57,7 @@ public class GithubStorageTest {
     }
 
     @Test
+    @DisabledIfEnvironmentVariable(named = "TRAVIS", matches = "true")
     public void readAddressBookContent_validGistId_contentReadSuccess() throws Exception {
         ReadOnlyAddressBook restoredAddressBook = XmlUtil.getDataFromString(
                 githubStorage.readContentFromStorage(UserPrefs.TargetBook.AddressBook, TEST_VALID_ADDRESS_BOOK_GIST_ID),
@@ -65,6 +66,7 @@ public class GithubStorageTest {
     }
 
     @Test
+    @DisabledIfEnvironmentVariable(named = "TRAVIS", matches = "true")
     public void readExpenseBookContent_validGistId_contentReadSuccess() throws Exception {
         ReadOnlyExpenseBook restoredExpenseBook = XmlUtil.getDataFromString(
                 githubStorage.readContentFromStorage(UserPrefs.TargetBook.ExpenseBook, TEST_VALID_EXPENSE_BOOK_GIST_ID),
