@@ -12,10 +12,8 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.jupiter.api.Disabled;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.kohsuke.github.HttpException;
