@@ -47,7 +47,7 @@ public class GithubStorageTest {
 
     @Before
     public void setUp() throws Exception {
-        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV .equals("true"));
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         testValidAddressBookGistUrl = new URL("https://gist.github.com/QzSG/c877006f34937fa5133b9619e2d7be1b");
         XmlAddressBookStorage xmlAddressBookStorage = new XmlAddressBookStorage(
                 TEST_DATA_FOLDER.resolve("ValidAddressBook.bak"));
@@ -59,7 +59,7 @@ public class GithubStorageTest {
 
     @Test
     public void readAddressBookContent_validGistId_contentReadSuccess() throws Exception {
-        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV .equals("true"));
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         ReadOnlyAddressBook restoredAddressBook = XmlUtil.getDataFromString(
                 githubStorage.readContentFromStorage(UserPrefs.TargetBook.AddressBook, TEST_VALID_ADDRESS_BOOK_GIST_ID),
                 XmlSerializableAddressBook.class).toModelType();
@@ -68,7 +68,7 @@ public class GithubStorageTest {
 
     @Test
     public void readExpenseBookContent_validGistId_contentReadSuccess() throws Exception {
-        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV .equals("true"));
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         ReadOnlyExpenseBook restoredExpenseBook = XmlUtil.getDataFromString(
                 githubStorage.readContentFromStorage(UserPrefs.TargetBook.ExpenseBook, TEST_VALID_EXPENSE_BOOK_GIST_ID),
                 XmlSerializableExpenseBook.class).toModelType();
@@ -77,14 +77,14 @@ public class GithubStorageTest {
 
     @Test
     public void readAddressBookContent_validGistIdInvalidContent_throws() throws Exception {
-        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV .equals("true"));
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         thrown.expect(NullPointerException.class); //Gist does not contain file named AddressBook.bak
         githubStorage.readContentFromStorage(UserPrefs.TargetBook.AddressBook, TEST_VALID_EXPENSE_BOOK_GIST_ID);
     }
 
     @Test
     public void readExpenseBookContent_validGistIdValidContent_readsSuccess() throws Exception {
-        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV .equals("true"));
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         String content = githubStorage.readContentFromStorage(UserPrefs.TargetBook.ExpenseBook,
                 TEST_VALID_EXPENSE_BOOK_GIST_ID);
         assertTrue(!content.isEmpty()); //Non empty string content
@@ -92,7 +92,7 @@ public class GithubStorageTest {
 
     @Test
     public void saveAddressBookContent_validContent_backupsSuccess() throws Exception {
-        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV .equals("true"));
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         String validContent = XmlUtil.convertDataToString(
                 new XmlSerializableAddressBook(readOnlyAddressBook));
         githubStorageStub = new GithubStorageStub(Optional.ofNullable(TEST_VALID_TOKEN_GIST_URL));
@@ -103,7 +103,7 @@ public class GithubStorageTest {
 
     @Test
     public void unSupportedOperationCalled_throws() {
-        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV .equals("true"));
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         thrown.expect(UnsupportedOperationException.class);
         githubStorage.saveContentToStorage(TEST_VALID_MOCK_CONTENT, TEST_VALID_ADDRESS_BOOK_FILENAME);
     }
