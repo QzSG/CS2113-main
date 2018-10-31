@@ -3,6 +3,7 @@ package seedu.address.storage;
 import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,7 +32,7 @@ public class GithubStorageTest {
     private static final String TEST_VALID_EXPENSE_BOOK_GIST_ID = "6e6d4388b672da5a29c951630f4610db";
     private static final String TEST_VALID_MOCK_CONTENT = "SAMPLE CONTENT STRING";
     private static final String TEST_VALID_TOKEN_GIST_URL = "CORRECT_TOKEN";
-
+    private static final String TRAVIS_ENV = System.getenv("IS_TRAVIS");
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -47,6 +48,7 @@ public class GithubStorageTest {
 
     @Before
     public void setUp() throws Exception {
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         testValidAddressBookGistUrl = new URL("https://gist.github.com/QzSG/c877006f34937fa5133b9619e2d7be1b");
         XmlAddressBookStorage xmlAddressBookStorage = new XmlAddressBookStorage(
                 TEST_DATA_FOLDER.resolve("ValidAddressBook.bak"));
@@ -58,6 +60,7 @@ public class GithubStorageTest {
 
     @Test
     public void readAddressBookContent_validGistId_contentReadSuccess() throws Exception {
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         ReadOnlyAddressBook restoredAddressBook = XmlUtil.getDataFromString(
                 githubStorage.readContentFromStorage(UserPrefs.TargetBook.AddressBook, TEST_VALID_ADDRESS_BOOK_GIST_ID),
                 XmlSerializableAddressBook.class).toModelType();
@@ -66,6 +69,7 @@ public class GithubStorageTest {
 
     @Test
     public void readExpenseBookContent_validGistId_contentReadSuccess() throws Exception {
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         ReadOnlyExpenseBook restoredExpenseBook = XmlUtil.getDataFromString(
                 githubStorage.readContentFromStorage(UserPrefs.TargetBook.ExpenseBook, TEST_VALID_EXPENSE_BOOK_GIST_ID),
                 XmlSerializableExpenseBook.class).toModelType();
@@ -75,12 +79,14 @@ public class GithubStorageTest {
     @Test
     @DisabledIfEnvironmentVariable(named = "TRAVIS", matches = "true")
     public void readAddressBookContent_validGistIdInvalidContent_throws() throws Exception {
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         thrown.expect(NullPointerException.class); //Gist does not contain file named AddressBook.bak
         githubStorage.readContentFromStorage(UserPrefs.TargetBook.AddressBook, TEST_VALID_EXPENSE_BOOK_GIST_ID);
     }
 
     @Test
     public void readExpenseBookContent_validGistIdValidContent_readsSuccess() throws Exception {
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         String content = githubStorage.readContentFromStorage(UserPrefs.TargetBook.ExpenseBook,
                 TEST_VALID_EXPENSE_BOOK_GIST_ID);
         assertTrue(!content.isEmpty()); //Non empty string content
@@ -88,7 +94,7 @@ public class GithubStorageTest {
 
     @Test
     public void saveAddressBookContent_validContent_backupsSuccess() throws Exception {
-
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         String validContent = XmlUtil.convertDataToString(
                 new XmlSerializableAddressBook(readOnlyAddressBook));
         githubStorageStub = new GithubStorageStub(Optional.ofNullable(TEST_VALID_TOKEN_GIST_URL));
@@ -99,12 +105,12 @@ public class GithubStorageTest {
 
     @Test
     public void unSupportedOperationCalled_throws() {
+        assumeFalse(TRAVIS_ENV != null && TRAVIS_ENV.equals("true"));
         thrown.expect(UnsupportedOperationException.class);
         githubStorage.saveContentToStorage(TEST_VALID_MOCK_CONTENT, TEST_VALID_ADDRESS_BOOK_FILENAME);
     }
 
     private class GithubStorageStub extends GithubStorage {
-
         private Optional<String> authToken;
         public GithubStorageStub(Optional<String> authToken) {
             this.authToken = authToken;
