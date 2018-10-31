@@ -80,6 +80,7 @@ public class GithubStorageTest {
     }
 
     @Test
+    @DisabledIfEnvironmentVariable(named = "TRAVIS", matches = "true")
     public void readExpenseBookContent_validGistIdValidContent_readsSuccess() throws Exception {
         String content = githubStorage.readContentFromStorage(UserPrefs.TargetBook.ExpenseBook,
                 TEST_VALID_EXPENSE_BOOK_GIST_ID);
