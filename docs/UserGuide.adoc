@@ -150,9 +150,9 @@ Format: `findname KEYWORD [MORE_KEYWORDS]`
 
 Examples:
 
-* `findaddress Mario` +
+* `findname Mario` +
 Returns `mario` and `Mario Gonzalez`
-* `findaddress mario alex david` +
+* `findname mario alex david` +
 Returns any contacts having names or body that contains `mario`, `alex`, or `david`
 
 === Locating contacts by phone: `findphone`
@@ -168,9 +168,9 @@ Format: `findname KEYWORD [MORE_KEYWORDS]`
 
 Examples:
 
-* `findaddress 98835761` +
+* `findphone 98835761` +
 Returns `98835761` and the contact with that phone number
-* `findaddress 98835761 87438807` +
+* `findphone 98835761 87438807` +
 Returns any contacts having phone number or body that contains `98835761`, or `87438807`
 
 === Deleting a person : `delete`
