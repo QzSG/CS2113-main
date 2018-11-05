@@ -33,10 +33,10 @@ image::Ui.png[width="790"]
 e.g. typing *`help`* and pressing kbd:[Enter] will open the help window.
 .  Some example commands you can try:
 
-* *`list`* : lists all tasks
-* **`add`**`n/Attend Post Modern Jukebox concert e/180918_2000 p/HIGH` : adds a task named `Attend Post Modern Jukebox concert` on `18 September 2018 at 8pm` with `HIGH`
+* *`list`* : lists all contacts
+* **`task`**`n/Attend Post Modern Jukebox concert b/hyped s/18/09_2000 e/18/09_2200 p/HIGH t/concert` on `18 September 2018 at 8pm` with `HIGH`
 priority to the Address Book.
-* **`delete`**`3` : deletes the 3rd task shown in the current list
+* **`delete`**`3` : deletes the 3rd contact shown in the current list
 * *`exit`* : exits the app
 
 .  Refer to <<Features>> for details of each command.
@@ -150,9 +150,9 @@ Format: `findname KEYWORD [MORE_KEYWORDS]`
 
 Examples:
 
-* `findaddress Mario` +
+* `findname Mario` +
 Returns `mario` and `Mario Gonzalez`
-* `findaddress mario alex david` +
+* `findname mario alex david` +
 Returns any contacts having names or body that contains `mario`, `alex`, or `david`
 
 === Locating contacts by phone: `findphone`
@@ -168,9 +168,9 @@ Format: `findname KEYWORD [MORE_KEYWORDS]`
 
 Examples:
 
-* `findaddress 98835761` +
+* `findphone 98835761` +
 Returns `98835761` and the contact with that phone number
-* `findaddress 98835761 87438807` +
+* `findphone 98835761 87438807` +
 Returns any contacts having phone number or body that contains `98835761`, or `87438807`
 
 === Deleting a person : `delete`
@@ -283,6 +283,11 @@ Format: `addExpense c/CATEGORY v/VALUE d/DATE [t/TAG]...`
 [TIP]
 An expense can have any number of tags (including 0)
 
+****
+The expense book is sorted by date, followed by value, and lastly the category. +
+The sorted expense book will be displayed once the user adds the expense.
+****
+
 Examples:
 
 * `addExpense c/taobao v/1111.11 d/11/11/2018`
@@ -299,6 +304,9 @@ Format: `edit INDEX [c/CATEGORY] [v/VALUE] [d/DATE] [t/TAG]...`
 * Existing values will be updated to the input values.
 * When editing tags, the existing tags of the person will be removed i.e adding of tags is not cumulative.
 * You can remove all the expense's tags by typing `t/` without specifying any tags after it.
+
+The expense book is sorted by date, followed by value, and lastly the category. +
+The sorted expense book will be displayed once the user edits the expense.
 ****
 
 Examples:
@@ -405,6 +413,9 @@ Format: `task n/NAME b/BODY s/START_DATETIME e/END_DATETIME [t/TAG]... p/PRIORIT
 [TIP]
 A task can only have its start and end DATE (without specific TIME). A task can have any number of tags (including 0).
 
+[NOTE]
+By default, the tasks are listed by descending order of priority i.e. HIGH, MED, LOW.
+
 Examples:
 
 * `task n/Submit Assignment b/CG2027 Assign2 s/18/10 e/25/10_1400 p/HIGH t/Hardcopy`
@@ -412,12 +423,12 @@ Examples:
 
 === Listing all tasks : `listTask`
 
-Shows a list of all tasks from task book in the schedule planner. +
+Shows a list of all tasks from task book in the student planner according to the deadline (end DateTime). +
 Format: `listTask`
 
 === Editing a task : `updateTask`
 
-Update an existing task in the schedule planner. +
+Update an existing task in the student planner. +
 Format: `updateTask INDEX [n/NAME] [b/BODY] [s/START_DATETIME] [e/END_DATETIME] [t/TAG]... [p/PRIORITY]`
 
 ****
@@ -440,13 +451,10 @@ Edits the 2nd task by clearing all existing tags.
 Finds tasks whose names or body contain any of the given keywords. +
 Format: `findTask KEYWORD [MORE_KEYWORDS]`
 
-****
-* The search is case insensitive. e.g `hans` will match `Hans`
-* The order of the keywords does not matter. e.g. `Hans Bo` will match `Bo Hans`
-* Only the name and body is searched.
-* Only full words will be matched e.g. `Han` will not match `Hans`
-* tasks matching at least one keyword will be returned (i.e. `OR` search). e.g. `Hans Bo` will return `Hans Gruber`, `Bo Yang`
-****
+//
+//****
+//* (i.e. `OR` search). e.g. `Hans Bo` will return `Hans Gruber`, `Bo Yang`
+//****
 
 Examples:
 
@@ -457,7 +465,7 @@ Returns any task having names or body `concert`, `meeting`, or `cute`
 
 === Deleting a task : `deleteTask`
 
-Deletes the specified task from the task book in the schedule planner. +
+Deletes the specified task from the task book in the student planner. +
 Format: `deleteTask INDEX`
 
 ****
@@ -489,6 +497,8 @@ Format: `backup | [GITHUB ACCESS_TOKEN]`
 
 ****
 * For GitHub online backup, a personal access token must be provided in `ACCESS_TOKEN`
+* Proceed to https://github.com/settings/tokens/new[Github Settings] and create a token under
+`Personal Access Token`, allow the `gist` scope to allow Gists Creation. The create token is your authentication token
 ****
 
 Examples:
