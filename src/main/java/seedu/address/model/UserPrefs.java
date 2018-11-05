@@ -20,13 +20,28 @@ public class UserPrefs {
     private Path expenseBookBackupFilePath;
     private String expenseBookGistId;
 
+    private Path eventBookFilePath;
+    private Path eventBookBackupFilePath;
+    private String eventBookGistId;
+
+    private Path taskBookFilePath;
+    private Path taskBookBackupFilePath;
+    private String taskBookGistId;
+
+
     public UserPrefs() {
-        setGuiSettings(500, 500, 0, 0);
+        setGuiSettings(1000, 500, 0, 0);
         setAddressBookFilePath(getAddressBookFilePath());
         setAddressBookBackupFilePath(getAddressBookBackupFilePath());
 
         setExpenseBookFilePath(getExpenseBookFilePath());
         setExpenseBookBackupFilePath(getExpenseBookBackupFilePath());
+
+        setEventBookFilePath(getEventBookFilePath());
+        setEventBookBackupFilePath(getEventBookBackupFilePath());
+
+        setTaskBookFilePath(getTaskBookFilePath());
+        setTaskBookBackupFilePath(getTaskBookBackupFilePath());
     }
 
     /**
@@ -34,7 +49,9 @@ public class UserPrefs {
      */
     public enum TargetBook {
         AddressBook,
-        ExpenseBook
+        EventBook,
+        ExpenseBook,
+        TaskBook
     }
 
     public GuiSettings getGuiSettings() {
@@ -79,6 +96,33 @@ public class UserPrefs {
 
     public void setExpenseBookGistId(String expenseBookGistId) {
         this.expenseBookGistId = expenseBookGistId;
+    }
+
+    public String getEventBookGistId() {
+        return eventBookGistId;
+    }
+
+    public void setEventBookGistId(String eventBookGistId) {
+        this.eventBookGistId = eventBookGistId;
+    }
+
+    public String getTaskBookGistId() {
+        return taskBookGistId;
+    }
+
+    public void setTaskBookGistId(String taskBookGistId) {
+        this.taskBookGistId = taskBookGistId;
+    }
+
+    /**
+     * Helper method to check if any of the Gist Ids for the books data is null
+     * @return True if any of the Gist Ids for the books data is null
+     */
+    public boolean hasNullGistId() {
+        return (getAddressBookGistId() == null || getAddressBookGistId().isEmpty())
+                || (getEventBookGistId() == null || getEventBookGistId().isEmpty())
+                || (getExpenseBookGistId() == null || getExpenseBookGistId().isEmpty())
+                || (getTaskBookGistId() == null || getTaskBookGistId().isEmpty());
     }
 
     @Override
@@ -133,6 +177,37 @@ public class UserPrefs {
         this.expenseBookBackupFilePath = expenseBookBackupFilePath;
     }
 
+    //===================Events=====================
+    public Path getEventBookFilePath() {
+        return eventBookFilePath == null ? Paths.get("data" , "eventbook.xml") : eventBookFilePath;
+    }
 
+    public void setEventBookFilePath(Path eventBookFilePath) {
+        this.eventBookFilePath = eventBookFilePath;
+    }
 
+    public Path getEventBookBackupFilePath() {
+        return eventBookBackupFilePath == null ? Paths.get("data" , "eventbook.bak") : eventBookBackupFilePath;
+    }
+
+    public void setEventBookBackupFilePath(Path eventBookBackupFilePath) {
+        this.eventBookBackupFilePath = eventBookBackupFilePath;
+    }
+    //=========== Task ====================================================================================
+
+    public Path getTaskBookFilePath() {
+        return taskBookFilePath == null ? Paths.get("data" , "taskbook.xml") : taskBookFilePath;
+    }
+
+    public void setTaskBookFilePath(Path taskBookFilePath) {
+        this.taskBookFilePath = taskBookFilePath;
+    }
+
+    public Path getTaskBookBackupFilePath() {
+        return taskBookBackupFilePath == null ? Paths.get("data" , "taskbook.bak") : taskBookBackupFilePath;
+    }
+
+    public void setTaskBookBackupFilePath(Path taskBookBackupFilePath) {
+        this.taskBookBackupFilePath = taskBookBackupFilePath;
+    }
 }

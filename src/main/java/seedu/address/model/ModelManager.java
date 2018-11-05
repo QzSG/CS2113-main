@@ -21,10 +21,18 @@ import seedu.address.commons.events.model.AddressBookChangedEvent;
 import seedu.address.commons.events.model.AddressBookLocalBackupEvent;
 import seedu.address.commons.events.model.AddressBookLocalRestoreEvent;
 import seedu.address.commons.events.model.AddressBookOnlineRestoreEvent;
+//import seedu.address.commons.events.model.BooksLocalBackupEvent;
+import seedu.address.commons.events.model.EventBookChangedEvent;
+import seedu.address.commons.events.model.EventBookLocalBackupEvent;
+import seedu.address.commons.events.model.EventBookLocalRestoreEvent;
+import seedu.address.commons.events.model.EventBookOnlineRestoreEvent;
 import seedu.address.commons.events.model.ExpenseBookChangedEvent;
 import seedu.address.commons.events.model.ExpenseBookLocalBackupEvent;
 import seedu.address.commons.events.model.ExpenseBookLocalRestoreEvent;
 import seedu.address.commons.events.model.ExpenseBookOnlineRestoreEvent;
+import seedu.address.commons.events.model.TaskBookChangedEvent;
+import seedu.address.commons.events.model.TaskBookLocalRestoreEvent;
+import seedu.address.commons.events.model.TaskBookOnlineRestoreEvent;
 import seedu.address.commons.events.model.UserPrefsChangedEvent;
 import seedu.address.commons.events.storage.OnlineBackupSuccessResultEvent;
 import seedu.address.commons.events.ui.NewNotificationAvailableEvent;
@@ -40,34 +48,44 @@ import seedu.address.storage.OnlineStorage;
  */
 public class ModelManager extends ComponentManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
-    private static final int BOOK_COUNT = 2;
+    private static final int BOOK_COUNT = 3;
 
     private final VersionedAddressBook versionedAddressBook;
+    private final VersionedEventBook versionedEventBook;
     private final VersionedExpenseBook versionedExpenseBook;
     private final FilteredList<Person> filteredPersons;
+    private final FilteredList<Event> filteredEvents;
     private final FilteredList<Expense> filteredExpenses;
     private final UserPrefs userPrefs;
+    private final VersionedTaskBook versionedTaskBook;
+    private final FilteredList<Task> filteredTasks;
+
 
     private int restoreCounter = 0;
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
      */
-    public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyExpenseBook expenseBook, UserPrefs userPrefs) {
+    public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyExpenseBook expenseBook,
+                        ReadOnlyEventBook eventBook, ReadOnlyTaskBook taskBook, UserPrefs userPrefs) {
         super();
         requireAllNonNull(addressBook, userPrefs);
 
         logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
 
         versionedAddressBook = new VersionedAddressBook(addressBook);
+        versionedEventBook = new VersionedEventBook(eventBook);
         versionedExpenseBook = new VersionedExpenseBook(expenseBook);
+        versionedTaskBook = new VersionedTaskBook(taskBook);
         filteredPersons = new FilteredList<>(versionedAddressBook.getPersonList());
+        filteredEvents = new FilteredList<>(versionedEventBook.getEventList());
         filteredExpenses = new FilteredList<>(versionedExpenseBook.getExpenseList());
+        filteredTasks = new FilteredList<>(versionedTaskBook.getTaskList());
         this.userPrefs = userPrefs;
     }
 
     public ModelManager() {
-        this(new AddressBook(), new ExpenseBook(), new UserPrefs());
+        this(new AddressBook(), new ExpenseBook(), new EventBook(), new TaskBook(), new UserPrefs());
     }
 
     @Override
@@ -82,6 +100,17 @@ public class ModelManager extends ComponentManager implements Model {
         indicateExpenseBookChanged();
     }
 
+    @Override
+    public void resetData(ReadOnlyEventBook newData) {
+        versionedEventBook.resetData(newData);
+        indicateEventBookChanged();
+    }
+
+    @Override
+    public void resetData(ReadOnlyTaskBook newData) {
+        versionedTaskBook.resetData(newData);
+        indicateTaskBookChanged();
+    }
 
     @Override
     public ReadOnlyAddressBook getAddressBook() {
@@ -134,7 +163,6 @@ public class ModelManager extends ComponentManager implements Model {
     @Override
     public void updatePerson(Person target, Person editedPerson) {
         requireAllNonNull(target, editedPerson);
-
         versionedAddressBook.updatePerson(target, editedPerson);
         indicateAddressBookChanged();
     }
@@ -210,6 +238,19 @@ public class ModelManager extends ComponentManager implements Model {
         checkAllRestored();
     }
 
+    @Override
+    public void restoreEventBook(ReadOnlyEventBook restoredEventBook) {
+        versionedEventBook.resetData(restoredEventBook);
+        Platform.runLater(() -> indicateEventBookChanged("Data Restored"));
+    }
+
+    @Override
+    public void restoreTaskBook(ReadOnlyTaskBook restoredTaskBook) {
+        versionedTaskBook.resetData(restoredTaskBook);
+        Platform.runLater(() -> indicateTaskBookChanged("Data Restored"));
+        checkAllRestored();
+    }
+
     /**
      * Checks that all books successfully restored
      */
@@ -238,6 +279,19 @@ public class ModelManager extends ComponentManager implements Model {
         restoreExpenseBook(event.readOnlyExpenseBook);
     }
 
+    @Subscribe
+    public void handleTaskBookLocalRestoreEvent(TaskBookLocalRestoreEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring task book from local storage"));
+        restoreTaskBook(event.readOnlyTaskBook);
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void handleEventBookLocalRestoreEvent(EventBookLocalRestoreEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring event book from local storage"));
+        restoreEventBook(event.readOnlyEventBook);
+    }
+
     @SuppressWarnings("unused")
     @Subscribe
     public void handleAddressBookOnlineRestoreEvent(AddressBookOnlineRestoreEvent event) {
@@ -258,6 +312,20 @@ public class ModelManager extends ComponentManager implements Model {
     public void handleExpenseBookOnlineRestoreEvent(ExpenseBookOnlineRestoreEvent event) {
         logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring expense book from online storage"));
         restoreExpenseBook(event.data);
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void handleEventBookOnlineRestoreEvent(EventBookOnlineRestoreEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring event book from online storage"));
+        restoreEventBook(event.data);
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void handleTaskBookOnlineRestoreEvent(TaskBookOnlineRestoreEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event, "Restoring task book from online storage"));
+        restoreTaskBook(event.data);
     }
 
     /**
@@ -290,8 +358,14 @@ public class ModelManager extends ComponentManager implements Model {
         case AddressBook:
             userPrefs.setAddressBookGistId(ref);
             break;
+        case EventBook:
+            userPrefs.setEventBookGistId(ref);
+            break;
         case ExpenseBook:
             userPrefs.setExpenseBookGistId(ref);
+            break;
+        case TaskBook:
+            userPrefs.setTaskBookGistId(ref);
             break;
         default:
             throw (new IllegalStateException("Reached illegal flow of code."));
@@ -300,36 +374,77 @@ public class ModelManager extends ComponentManager implements Model {
     //@@author
 
     //@@author luhan02
+    //========== Task ==============================================================
+
+    @Override
+    public ReadOnlyTaskBook getTaskBook() {
+        return versionedTaskBook;
+    }
+
+    /** Raises an event to indicate the model has changed */
+    private void indicateTaskBookChanged() {
+        raise(new TaskBookChangedEvent(versionedTaskBook));
+    }
+
+    private void indicateTaskBookChanged(String message) {
+        raise(new TaskBookChangedEvent(versionedTaskBook));
+        raise(new NewResultAvailableEvent(message));
+    }
+
     @Override
     public boolean hasTask(Task task) {
-        return false;
+        requireNonNull(task);
+        return versionedTaskBook.hasTask(task);
     }
 
     @Override
     public void deleteTask(Task target) {
-
+        versionedTaskBook.removeTask(target);
+        indicateTaskBookChanged();
     }
 
     @Override
-    public void addTask(Task person) {
-
+    public void addTask(Task task) {
+        versionedTaskBook.addTask(task);
+        //updateFilteredTaskList(PREDICATE_SHOW_ALL_TASKS);
+        indicateTaskBookChanged();
     }
 
     @Override
-    public void updateTask(Task target, Task editedPerson) {
-
+    public void updateTask(Task target, Task updatedTask) {
+        requireAllNonNull(target, updatedTask);
+        versionedTaskBook.updateTask(target, updatedTask);
+        indicateTaskBookChanged();
     }
 
+    /**
+     * Returns an unmodifiable view of the list of {@code Task} backed by the internal list of
+     * {@code versionedTaskBook}
+     */
     @Override
     public ObservableList<Task> getFilteredTaskList() {
-        return null;
+        return FXCollections.unmodifiableObservableList(filteredTasks);
     }
 
     @Override
     public void updateFilteredTaskList(Predicate<Task> predicate) {
+        requireNonNull(predicate);
+        filteredTasks.setPredicate(predicate);
+        sortedTaskList(filteredTasks);
+    }
 
+    private void sortedTaskList(FilteredList<Task> filteredTasks) {
+        versionedTaskBook.sort();
+        indicateTaskBookChanged();
+    }
+
+    @Override
+    public void commitTaskBook() {
+        versionedTaskBook.commit();
     }
     //@@author
+
+    //@@author ian-tjahjono
 
     @Override
     public boolean hasEvent(Event event) {
@@ -350,6 +465,33 @@ public class ModelManager extends ComponentManager implements Model {
     @Override
     public ObservableList<Event> getFilteredEventList() {
         return null;
+    }
+
+
+    @Override
+    public void commitEventBook() {
+        versionedEventBook.commit();
+    }
+
+    @Override
+    public ReadOnlyEventBook getEventBook() {
+        return versionedEventBook;
+    }
+
+    /** Raises an event to indicate the model has changed */
+    private void indicateEventBookChanged() {
+        raise(new EventBookChangedEvent(versionedEventBook));
+    }
+
+    /** Raises an event to indicate the model has changed with custom message*/
+    private void indicateEventBookChanged(String message) {
+        raise(new EventBookChangedEvent(versionedEventBook));
+        raise(new NewResultAvailableEvent(message));
+    }
+
+    /** Raises an event to indicate the request to backup model to persistent storage*/
+    private void indicateEventBookBackupRequest(Path backupPath) {
+        raise(new EventBookLocalBackupEvent(versionedEventBook, userPrefs.getEventBookBackupFilePath()));
     }
 
     @Override

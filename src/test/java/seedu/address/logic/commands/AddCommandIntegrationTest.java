@@ -8,9 +8,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import seedu.address.logic.CommandHistory;
+import seedu.address.model.EventBook;
 import seedu.address.model.ExpenseBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
+import seedu.address.model.TaskBook;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
@@ -25,14 +27,16 @@ public class AddCommandIntegrationTest {
 
     @Before
     public void setUp() {
-        model = new ModelManager(getTypicalAddressBook(), new ExpenseBook(), new UserPrefs());
+        model = new ModelManager(getTypicalAddressBook(), new ExpenseBook(), new EventBook(),
+                new TaskBook(), new UserPrefs());
     }
 
     @Test
     public void execute_newPerson_success() {
         Person validPerson = new PersonBuilder().build();
 
-        Model expectedModel = new ModelManager(model.getAddressBook(), new ExpenseBook(), new UserPrefs());
+        Model expectedModel = new ModelManager(model.getAddressBook(), new ExpenseBook(),
+                new EventBook(), new TaskBook(), new UserPrefs());
         expectedModel.addPerson(validPerson);
         expectedModel.commitAddressBook();
 

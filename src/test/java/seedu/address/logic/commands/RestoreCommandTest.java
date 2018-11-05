@@ -13,9 +13,12 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import seedu.address.logic.CommandHistory;
+import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.model.EventBook;
 import seedu.address.model.ExpenseBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
+import seedu.address.model.TaskBook;
 import seedu.address.model.UserPrefs;
 import seedu.address.storage.OnlineStorage;
 import seedu.address.storage.XmlAddressBookStorage;
@@ -46,6 +49,8 @@ public class RestoreCommandTest {
         Path tempExpenseBookFilePath = testFolder.getRoot().toPath().resolve("ExpenseBook.xml");
 
         ExpenseBook expenseBook = new ExpenseBook();
+        EventBook eventBook = new EventBook();
+        TaskBook taskBook = new TaskBook();
         UserPrefs userPrefs = new UserPrefs();
 
         userPrefs.setAddressBookBackupFilePath(tempAddressBookBackupFilePath);
@@ -56,19 +61,21 @@ public class RestoreCommandTest {
         UserPrefs noBackupUserPrefs = new UserPrefs();
 
         userPrefs.setAddressBookGistId("c877006f34937fa5133b9619e2d7be1b");
+        userPrefs.setEventBookGistId("abc599102cd4da237258183615fd8661");
         userPrefs.setExpenseBookGistId("6e6d4388b672da5a29c951630f4610db");
+        userPrefs.setTaskBookGistId("f2fdeb364cf38fbb4d32f246d3da0222");
 
         System.out.println(userPrefs.getAddressBookBackupFilePath());
-        model = new ModelManager(getTypicalAddressBook(), expenseBook, userPrefs);
+        model = new ModelManager(getTypicalAddressBook(), expenseBook, eventBook, taskBook, userPrefs);
         XmlAddressBookStorage xmlAddressBookStorage = new XmlAddressBookStorage(tempAddressBookBackupFilePath);
         xmlAddressBookStorage.saveAddressBook(model.getAddressBook());
         XmlExpenseBookStorage xmlExpenseBookStorage = new XmlExpenseBookStorage(tempExpenseBookBackupFilePath);
         xmlExpenseBookStorage.saveExpenseBook(model.getExpenseBook());
-        noBackupModel = new ModelManager(getTypicalAddressBook(), expenseBook, noBackupUserPrefs);
+        noBackupModel = new ModelManager(getTypicalAddressBook(), expenseBook, eventBook, taskBook, noBackupUserPrefs);
     }
 
     @Test
-    public void execute_malformedLocalBackupCommandInit_tokenExistsThrows() {
+    public void execute_malformedLocalRestoreCommandInit_tokenExistsThrows() {
         thrown.expect(AssertionError.class);
         new RestoreCommand(
                 Optional.ofNullable(model.getUserPrefs().getAddressBookBackupFilePath()), true,
@@ -76,15 +83,15 @@ public class RestoreCommandTest {
     }
 
     @Test
-    public void execute_malformedOnlineBackupCommandInit_tokenNotExistsThrows() {
+    public void execute_malformedGithubRestoreCommandInit_tokenNotExistsThrows() {
         thrown.expect(AssertionError.class);
         new RestoreCommand(
                 Optional.empty(), false,
-                Optional.empty(), Optional.empty());
+                Optional.ofNullable(OnlineStorage.Type.GITHUB), Optional.ofNullable("AUTH_TOKEN"));
     }
 
     @Test
-    public void execute_localRestoreSuccess() {
+    public void execute_localRestoreSuccess() throws CommandException {
         RestoreCommand command = new RestoreCommand(Optional.empty(), true, Optional.empty(), Optional.empty());
         CommandResult result = command.execute(model, new CommandHistory());
         String expectedPath = model.getUserPrefs().getAddressBookBackupFilePath().getParent().toString();
@@ -92,19 +99,19 @@ public class RestoreCommandTest {
     }
 
     @Test
-    public void execute_onlineRestore_noPreviousBackupInitFails() {
+    public void execute_onlineRestore_noPreviousBackupInitFails() throws CommandException {
         RestoreCommand command = new RestoreCommand(Optional.empty(), false,
-                Optional.ofNullable(OnlineStorage.Type.GITHUB), Optional.ofNullable("INVALID_TOKEN"));
+                Optional.ofNullable(OnlineStorage.Type.GITHUB), Optional.empty());
         CommandResult result = command.execute(noBackupModel, new CommandHistory());
         assertEquals(String.format(RestoreCommand.MESSAGE_FAILURE,
                 RestoreCommand.MESSAGE_FAILURE_SAMPLE), result.feedbackToUser);
     }
 
     @Test
-    public void execute_onlineRestoreInitSuccess() {
+    public void execute_onlineRestoreInitSuccess() throws CommandException {
         RestoreCommand command = new RestoreCommand(Optional.empty(), false,
                 Optional.ofNullable(OnlineStorage.Type.GITHUB),
-                Optional.ofNullable("INVALID_TOKEN"));
+                Optional.empty());
         CommandResult result = command.execute(model, new CommandHistory());
         assertEquals(String.format(RestoreCommand.MESSAGE_SUCCESS, "GitHub Gists"), result.feedbackToUser);
     }

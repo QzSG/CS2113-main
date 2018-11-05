@@ -42,6 +42,7 @@ public class MainWindow extends UiPart<Stage> {
     private ExpenseListPanel expenseListPanel;
     private PersonListPanel personListPanel;
     private EventListPanel eventListPanel;
+    private TaskListPanel taskListPanel;
     private Config config;
     private UserPrefs prefs;
     private HelpWindow helpWindow;
@@ -66,6 +67,9 @@ public class MainWindow extends UiPart<Stage> {
 
     //@FXML
     //private StackPane eventListPanelPlaceholder;
+
+    @FXML
+    private StackPane taskListPanelPlaceholder;
 
     @FXML
     private StackPane resultDisplayPlaceholder;
@@ -146,6 +150,9 @@ public class MainWindow extends UiPart<Stage> {
         personListPanel = new PersonListPanel(logic.getFilteredPersonList());
         personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
 
+        taskListPanel = new TaskListPanel(logic.getFilteredTaskList());
+        taskListPanelPlaceholder.getChildren().add(taskListPanel.getRoot());
+
         //eventListPanel = new EventListPanel(logic.getFilteredEventList());
         //eventListPanelPlaceholder.getChildren().add(eventListPanel.getRoot());
 
@@ -221,6 +228,10 @@ public class MainWindow extends UiPart<Stage> {
         return expenseListPanel;
     }
 
+    public TaskListPanel getTaskListPanel() {
+        return taskListPanel;
+    }
+
     void releaseResources() {
         browserPanel.freeResources();
     }
@@ -255,15 +266,15 @@ public class MainWindow extends UiPart<Stage> {
     @Subscribe
     private void handleDisplayMonthlyExpenseEvent(DisplayMonthlyExpenseEvent event) {
         logger.info(LogsCenter.getEventHandlingLogMessage(event));
-        handleDisplayMonthlyExpense(event.getMonthlyData());
+        handleDisplayMonthlyExpense(event.getMonthlyData(), event.getSelectedMonth());
     }
 
     /**
      * Display the monthly expense window or focuses on it if it's already opened.
      */
     @FXML
-    public void handleDisplayMonthlyExpense(HashMap<String, String> monthlyData) {
-        monthlyExpenseWindow.setMonthlyData(monthlyData);
+    public void handleDisplayMonthlyExpense(HashMap<String, String> monthlyData, String selectedMonth) {
+        monthlyExpenseWindow.setMonthlyData(monthlyData, selectedMonth);
         if (!monthlyExpenseWindow.isShowing()) {
             monthlyExpenseWindow.show();
         } else {

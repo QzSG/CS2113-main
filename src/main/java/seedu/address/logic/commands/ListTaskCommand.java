@@ -9,11 +9,11 @@ import seedu.address.model.Model;
 
 //@@author luhan02
 /**
- * Lists all tasks in the student planner to the user.
+ * Lists all tasks in the task book to the user.
  */
 public class ListTaskCommand extends Command {
 
-    public static final String COMMAND_WORD = "taskList";
+    public static final String COMMAND_WORD = "listTask";
 
     public static final String MESSAGE_SUCCESS = "Listed all tasks";
 

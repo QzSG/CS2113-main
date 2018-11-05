@@ -357,7 +357,11 @@ Given below is an example usage scenario and how the CRUD mechanism behaves at e
 
 Step 1. The user launches the application for the first time. The Student Planner will be initialized with the initial task planner state.
 
+image::taskStartingStateListDiagram.png[width="800"]
+
 Step 2. The user executes `add t/submission ...` command to add a new submission task to the student planner. The `add` command calls `Model#addTask()` which returns a task to be shown in the task list.
+
+image::taskCommand1StateListDiagram.png[width="700"]
 
 Step 3. The user executes  `find ...` command to search any existing task. The `find` command calls `Model#findTask()` and it does not modify the student planner, the studentPlannerStateList remains unchanged.
 
@@ -504,6 +508,12 @@ The command then calls `EventsCenter#post(new DisplayExpenseTrendEvent(expenseTr
 
 `ExpenseTrendWindow` creates a bar chart with the data and open a new window to display the bar chart.
 
+The following sequence diagram shows how the expense trend operation works:
+
+image::expenseTrendSequenceDiagramPart1.png[width="800"]
+
+image::expenseTrendSequenceDiagramPart2.png[width="800"]
+
 ==== Monthly expense
 This function displays the expense value of each category for the selected month in a new window.
 This function is facilitated by `MonthlyExpenseCommand`, it extends the `Command`.
@@ -516,6 +526,12 @@ The list of expense will be filtered by the selected month in the `getMonthlyExp
 The command then calls `EventsCenter#post(new DisplayMonthlyExpenseEvent(monthlyData))` to create an display monthly expense event with the monthly expense data, and pass the event to the EventCenter.
 
 The rest are similar to the Expense Trend but the data were represented in a pie chart instead of a bar chart.
+
+The following sequence diagram shows how the monthly expense operation works:
+
+image::monthlyExpenseSequenceDiagramPart1.png[width="800"]
+
+image::monthlyExpenseSequenceDiagramPart2.png[width="800"]
 // end::expensefeature[]
 //@@author
 
@@ -1178,16 +1194,15 @@ Use case ends.
 +
 Use case ends.
 
+//@@author QzSG
 [discrete]
-=== Use case: Local tasks backup (UC8)
+=== Use case: Local Student Planner data backup (UC8)
 *Prerequisite*
-
-1. At least one tasks exists
 
 *MSS*
 
-1.  User requests to backup all data to another local folder
-2.  StudentPlanner backups current data to specified folder
+1.  User requests to backup data locally
+2.  StudentPlanner backups current data to backup folder
 +
 Use case ends.
 
@@ -1201,10 +1216,7 @@ Use case ends.
 Use case ends.
 
 [discrete]
-=== Use case: Online tasks backup (UC9)
-*Prerequisite*
-
-1. At least one online backup service has been set up.
+=== Use case: Online Student Planner data backup (UC9)
 
 *MSS*
 
@@ -1216,14 +1228,17 @@ Use case ends.
 *Extensions*
 
 [none]
-* 2a. Service has not been set up previously
+* 1a. User provides invalid credentials
 [none]
-** 2a1. StudentPlanner prompts user to first set up the specified online service.
+** 1a1. StudentPlanner shows error.
 +
-* 2b. Service is not recognised or unsupported
+Use case ends.
+
 [none]
-** 2b1. StudentPlanner shows error.
-** 2b2. StudentPlanner shows help for online backup.
+* 2a. Service is not recognised or unsupported
+[none]
+** 2a1. StudentPlanner shows error.
+** 2a2. StudentPlanner shows help for online backup.
 +
 Use case ends.
 

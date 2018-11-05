@@ -19,7 +19,9 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.model.ReadOnlyEventBook;
 import seedu.address.model.ReadOnlyExpenseBook;
+import seedu.address.model.ReadOnlyTaskBook;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.event.Event;
 import seedu.address.model.expense.Expense;
@@ -104,12 +106,32 @@ public class AddCommandTest {
         }
 
         @Override
-        public void resetData(ReadOnlyExpenseBook newData) {
+        public void resetData(ReadOnlyEventBook newData) {
             throw new AssertionError("This method should not be called.");
         }
 
         @Override
+        public void resetData(ReadOnlyExpenseBook newData) {
+            throw new AssertionError("This mgethod should not be called.");
+        }
+
+        @Override
+        public void resetData(ReadOnlyTaskBook newData) {
+
+        }
+
+        @Override
         public ReadOnlyAddressBook getAddressBook() {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public ReadOnlyEventBook getEventBook() {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public ReadOnlyTaskBook getTaskBook() {
             throw new AssertionError("This method should not be called.");
         }
 
@@ -179,6 +201,19 @@ public class AddCommandTest {
         }
 
         @Override
+        public void restoreEventBook(ReadOnlyEventBook restoredEventBook) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        public void restoreTaskBook(ReadOnlyTaskBook restoredTaskBook) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void commitTaskBook() {
+        }
+
+        @Override
         public boolean hasTask(Task task) {
             return false;
         }
@@ -207,7 +242,7 @@ public class AddCommandTest {
         public void updateFilteredTaskList(Predicate<Task> predicate) {
 
         }
-
+        //==================Events==============================================================
         @Override
         public ObservableList<Event> getFilteredEventList() {
             return null;
@@ -225,6 +260,11 @@ public class AddCommandTest {
 
         @Override
         public void deleteEvent(Event target) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void commitEventBook() {
             throw new AssertionError("This method should not be called.");
         }
 
@@ -334,4 +374,3 @@ public class AddCommandTest {
     }
 
 }
-

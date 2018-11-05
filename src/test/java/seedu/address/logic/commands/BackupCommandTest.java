@@ -14,9 +14,11 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import seedu.address.logic.CommandHistory;
+import seedu.address.model.EventBook;
 import seedu.address.model.ExpenseBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
+import seedu.address.model.TaskBook;
 import seedu.address.model.UserPrefs;
 import seedu.address.storage.OnlineStorage;
 
@@ -38,13 +40,15 @@ public class BackupCommandTest {
     @Before
     public void setUp() {
         Path tempBackupFilePath = testFolder.getRoot().toPath().resolve("Temp.bak");
+        EventBook eventBook = new EventBook();
         ExpenseBook expenseBook = new ExpenseBook();
+        TaskBook taskBook = new TaskBook();
         UserPrefs userPrefs = new UserPrefs();
 
         userPrefs.setAddressBookBackupFilePath(tempBackupFilePath);
         System.out.println(userPrefs.getAddressBookBackupFilePath());
-        model = new ModelManager(getTypicalAddressBook(), expenseBook, userPrefs);
-        expectedModel = new ModelManager(getTypicalAddressBook(), expenseBook, userPrefs);
+        model = new ModelManager(getTypicalAddressBook(), expenseBook, eventBook, taskBook, userPrefs);
+        expectedModel = new ModelManager(getTypicalAddressBook(), expenseBook, eventBook, taskBook, userPrefs);
     }
 
     @Test

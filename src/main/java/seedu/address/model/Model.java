@@ -29,8 +29,17 @@ public interface Model {
     /** Clears existing expense model and replaces with the provided new data. */
     void resetData(ReadOnlyExpenseBook newData);
 
+    /** Clears existing event model and replaces with the provided new data. */
+    void resetData(ReadOnlyEventBook newData);
+
+    /** Clears existing expense model and replaces with the provided new data. */
+    void resetData(ReadOnlyTaskBook newData);
+
     /** Returns the AddressBook */
     ReadOnlyAddressBook getAddressBook();
+
+    /** Returns the TaskBook */
+    ReadOnlyTaskBook getTaskBook();
 
     /** Returns the UserPreferences */
     UserPrefs getUserPrefs();
@@ -100,38 +109,54 @@ public interface Model {
     void restoreAddressBook(ReadOnlyAddressBook restoredAddressBook);
 
     /**
-     * Restore address book from storage.
+     * Restore expense book from storage.
      * @param restoredExpenseBook
      */
     void restoreExpenseBook(ReadOnlyExpenseBook restoredExpenseBook);
 
+    /**
+     * Restore event book from storage.
+     * @param restoredEventBook
+     */
+    void restoreEventBook(ReadOnlyEventBook restoredEventBook);
+
+    /**
+     * Restore task book from storage.
+     * @param restoredTaskBook
+     */
+    void restoreTaskBook(ReadOnlyTaskBook restoredTaskBook);
 
     //@@author luhan02
     /**
-     * Returns true if a task with the same identity as {@code task} exists in the address book.
+     * Saves the current task book state.
+     */
+    void commitTaskBook();
+
+    /**
+     * Returns true if a task with the same identity as {@code task} exists in the task book.
      */
     boolean hasTask(Task task);
 
     /**
      * Deletes the given task.
-     * The task must exist in the student planner.
+     * The task must exist in the task book.
      */
     void deleteTask(Task target);
 
     /**
      * Adds the given task.
-     * {@code task} must not already exist in the student planner.
+     * {@code task} must not already exist in the task book.
      */
     void addTask(Task task);
 
     /**
      * Replaces the given task {@code target} with {@code editedTask}.
      * {@code target} must exist in the task list.
-     * The task identity of {@code editedPerson} must not be the same as another existing task in the task list.
+     * The task identity of {@code editedTask} must not be the same as another existing task in the task list.
      */
-    void updateTask(Task target, Task editedPerson);
+    void updateTask(Task target, Task editedTask);
 
-    /** Returns an unmodifiable view of the filtered person list */
+    /** Returns an unmodifiable view of the filtered task list */
     ObservableList<Task> getFilteredTaskList();
 
     /**
@@ -139,6 +164,8 @@ public interface Model {
      * @throws NullPointerException if {@code predicate} is null.
      */
     void updateFilteredTaskList(Predicate<Task> predicate);
+    //@@author
+
     //@@author ian-tjahjono
 
     /**
@@ -160,6 +187,14 @@ public interface Model {
 
     /** Returns an unmodifiable view of the filtered event list */
     ObservableList<Event> getFilteredEventList();
+
+    /**
+     * Saves the current expense book state for undo/redo.
+     */
+    void commitEventBook();
+
+    /** Returns the EventBook */
+    ReadOnlyEventBook getEventBook();
 
     //@@author ChenSongJian
 
