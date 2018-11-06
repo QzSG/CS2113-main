@@ -17,17 +17,13 @@ Student Planner is a all-in-one desktop manager application that allows students
 
 == Summary of contributions
 
-* *Major enhancement*: added *the ability to backup/restore user data*
+* *Major enhancement*: added *the ability to backup and restore user data*
 ** What it does: allows the user to backup current user data both online and locally. Backups can be restored by using the restore command.
-** Justification: This feature improves the product significantly because a user may have the app on many desktops and this provides a convenient way to synchronise them among many devices.
+** Justification: This feature improves the product significantly because our target users have the app on many desktops and this provides a convenient way to synchronise them among many devices.
 ** Highlights: This enhancement enables a generic class that can be easily extended by developers to support more types of online backup services in future. It requires an in-depth analysis of design alternatives.
-The implementation too was challenging as the backing up of data online may take a long time, existing implementation will cause the application to freeze until any backup is completed.
-The current implementation exhibits a working knowledge of multithreading applications, concurrency as well as event driven programming.
+The implementation too was challenging as the backing up and restoring of online data may take a long time, existing implementation will cause the application to freeze until any backup is completed.
+The current implementation exhibits a working knowledge of multithreaded applications, concurrency, event driven programming as well as GUI application design.
 ** Credits: GitHub Api by kohsuke.
-
-* *Minor enhancement*: added a user preferences command that allows the user to customise their application preferences such as default backup locations, online backup data location and other application settings.
-
-* *Code contributed*: [https://github.com[Functional code]] [https://github.com[Test code]] _{give links to collated code files}_
 
 * *Other contributions*:
 
