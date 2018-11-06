@@ -378,8 +378,8 @@ Step 6. The user now decides that the task added was a mistake, and decides to r
 ==== Backups Types
 The application supports both local and online backups
 
-==== Backup Implementation
-A `OnlineStorage` interface must be implemented by all forms of Online backup services. This allows developers to easily add and extend the list of supported backup services by implementing a common set of methods.
+==== Backup and Restore Storage Implementation
+A `OnlineStorage` interface must be implemented by all forms of Online backup and restore services. This allows developers to easily add and extend the list of supported backup services by implementing a common set of methods.
 The current minimum set of methods that must be implemented are
 
 * `OnlineStorage#saveContentToStorage`.
@@ -479,31 +479,29 @@ In this example, `GithubStorage#saveContentToStorage` is called for the respecti
 ==== Restore Types
 The application supports both local and online restore of backup made using the `backup` feature
 
+* For local restore, the backup book files specified in `preferences.json` will be used.
+* For online restore, for example Github restore, the gist ids in `preferences.json` which represent the reference url to the backup data files will be used.
+
 ==== Design Considerations
-===== Aspect: How is the backup command initiated
-The backup mechanism is unique from the other command implementation as the execution of a `BackupCommand` uses an event driven approach to activate a backup request instead of going through the model manager. Backup command is executed this way
-because of the following reason.
+===== Aspect: How is the restore command initiated
+The restore feature is similar to backup feature in terms of both features using an event driven approach to reduce coupling and increase cohesion of the different components, specifically
+the `model` and `storage` components.
 
-Backup requires the current in memory book data inside the `Model`, however the `execute` function is actually passed our `model` containing the required books data. We can raise a backup event directly with the books data provided in the model we have access too
+Restore commands sends either a `LocalRestoreEvent` or a `OnlineRestoreEvent` event
+The raised event is observed and handled by the storage manager which performs the reading of the local or online files into the appropriate data book objects such as `ReadOnlyAddressBook`
+An event is then triggered by `storage` on successful restore which informs `model` that an update to the in memory state is required.
 
-The raised event is observed and handled by the storage manager which performs the backup (either local or through supported online services) using the books from the `model` passed in through the `OnlineBackupEvent` or `LocalBackupEvent`
+The _Sequence Diagram_ below shows how the components interact for the scenario where the user issues the local restore command `restore` and valid local backup exists.
 
-The _Sequence Diagram_ below shows how the components interact for the scenario where the user issues the local backup command `backup`.
-
+image::SDforRestoreLocalwithEventHandlingPart1.png[width="800"]
 .Component interactions for `backup` command (local backup)
-image::SDforBackupLocalwithEventHandling.png[width="800"]
+image::SDforRestoreLocalwithEventHandlingPart2.png[width="800"]
 
 [NOTE]
-Note how `Logic` simply raises a `LocalBackupEvent` instead of posting the backup request from the `Model`. This is because `logic` has the `model`
-and can simply pass the required data along in the event to `storage` directly.
-The event is propagated through the `EventsCenter` to the `Storage` and `UI` bypassing the `Model`
+Note how `Logic` simply raises a `LocalRestoreEvent`
+The event is propagated through the `EventsCenter` to the `Storage` component
 
-The _Sequence Diagram_ below shows how the components interact for the scenario where the user issues the online github backup command `backup GITHUB AUTH_TOKEN`.
-
-image::SDforBackupOnlinewithEventHandlingPart1.png[width="800"]
-.Component interactions for `backup GITHUB AUTH_TOKEN` command (online github backup)
-image::SDforBackupOnlinewithEventHandlingPart2.png[width="800"]
-
+Online Restoration is similar to Local Restore but utilising the same `ExecutorService` used in `backup` to retrieve the online backup data books concurrently.
 
 // end::backuprestore[]
 //@@author
@@ -1434,10 +1432,9 @@ _{ more test cases ... }_
 
 _{ more test cases ... }_
 
-=== Saving data
+//@@author QzSG
+=== Backup of data
 
-. Dealing with missing/corrupted data files
+. Backup of data to local storage
 
-.. _{explain how to simulate a missing/corrupted file and the expected behavior}_
-
-_{ more test cases ... }_
+. Backup of data to online Github storage
