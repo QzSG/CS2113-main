@@ -103,8 +103,8 @@ public class RestoreCommandTest {
         RestoreCommand command = new RestoreCommand(Optional.empty(), false,
                 Optional.ofNullable(OnlineStorage.Type.GITHUB), Optional.empty());
         CommandResult result = command.execute(noBackupModel, new CommandHistory());
-        assertEquals(String.format(RestoreCommand.MESSAGE_FAILURE,
-                RestoreCommand.MESSAGE_FAILURE_SAMPLE), result.feedbackToUser);
+        assertEquals(String.format(RestoreCommand.MESSAGE_FAILURE_ONLINE,
+                RestoreCommand.MESSAGE_FAILURE_ONLINE_SAMPLE), result.feedbackToUser);
     }
 
     @Test
