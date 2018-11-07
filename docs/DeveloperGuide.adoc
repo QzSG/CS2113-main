@@ -1499,7 +1499,7 @@ _{ more test cases ... }_
    Test case: `restore GITHUB` +
    Expected: Status message displayed to prompt user to first do an online backup or set relevant backup gist ids in `preferences.json`.
 
-.. Prerequisites: Certain backup gists who's ids are indicated in `preferences.json` has been deleted.
+.. Prerequisites: Certain backup gists who's ids are indicated in `preferences.json` has been deleted. +
    Test case: `restore GITHUB` +
    Expected: Error popup will appear for said data books. While any valid gists will still be restored, no success notification will be showed, however, status message will show restore succeeded as long as one of the book gists are valid and exists.
 
@@ -1507,7 +1507,7 @@ _{ more test cases ... }_
    Test case: `restore GITHUB` +
    Expected: Error popup will appear for all data books. Status message will show restore failed.
 
-** Prerequisites: Online backup command has been run before and all gist ids in `preferences.json` are valid +
+.. Prerequisites: Online backup command has been run before and all gist ids in `preferences.json` are valid +
    Test case: `restore GITHUB VALID_AUTH_TOKEN` +
    Expected: No restore is performed. Invalid command status message is shown to user with correct usage.
 // end::manualTestBackupRestore[]
