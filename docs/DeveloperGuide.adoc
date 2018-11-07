@@ -1511,4 +1511,4 @@ _{ more test cases ... }_
    Test case: `restore GITHUB VALID_AUTH_TOKEN` +
    Expected: No restore is performed. Invalid command status message is shown to user with correct usage.
 // end::manualTestBackupRestore[]
-//@@author QzSG
+//@@author
