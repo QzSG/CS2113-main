@@ -75,7 +75,7 @@ public class UserPrefs {
     }
 
     public Path getAddressBookBackupFilePath() {
-        return (addressBookBackupFilePath == null )? Paths.get("data" , "addressbook.bak") : addressBookBackupFilePath;
+        return addressBookBackupFilePath == null ? Paths.get("data" , "addressbook.bak") : addressBookBackupFilePath;
     }
 
     public void setAddressBookBackupFilePath(Path addressBookBackupFilePath) {
