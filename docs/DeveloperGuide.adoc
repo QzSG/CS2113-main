@@ -1477,7 +1477,7 @@ _{ more test cases ... }_
    Test case: `restore` +
    Expected: Restore success status message is displayed. Local Restore notification is also created and shown to user
 
-.. Prerequisites: `backup` command has not been run before
+.. Prerequisites: `backup` command has not been run before +
    Test case: `restore` +
    Expected: Status message displayed to prompt user to first do a backup or set relevant backup file paths in `preferences.json`.
 
