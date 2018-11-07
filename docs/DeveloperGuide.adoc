@@ -1433,8 +1433,82 @@ _{ more test cases ... }_
 _{ more test cases ... }_
 
 //@@author QzSG
+// tag::manualTestBackupRestore[]
 === Backup of data
 
 . Backup of data to local storage
 
-. Backup of data to online Github storage
+.. Prerequisites: Backup file paths in `preferences.json` has default file path values before application is started +
+   Test case: `backup` +
+   Expected: All books data is backup to file paths located from `preferences.json`.
+   Notification is shown to user that local backup is successful.
+
+.. Prerequisites: Backup file paths in `preferences.json` is `null` before application is started +
+   Test case: `backup` +
+   Expected: All books data is backup to default file paths located under `data` directory. `preferences.json` will also be updated with default backup file paths.
+   Notification is shown to user that local backup is successful.
+
+.. Prerequisites: Backup file paths in `preferences.json` are directories before application is started +
+   Test case: `backup` +
+   Expected: All books data is backup to default file paths located under `data` directory. `preferences.json` will also be updated with default backup file paths.
+   Notification is shown to user that local backup is successful.
+
+. Backup of data to online storage service
+
+.. Test case: `backup GITHUB VALID_AUTH_TOKEN` +
+   Expected: Book data is saved to Github gists. Status message updates to show successful backup.
+   Success notifications with the corresponding data backup urls will be created and shown to user.
+
+.. Test case: `backup INVALID` +
+   Expected: No backup is performed. Invalid online service or command details shown in status message with command usage.
+
+.. Test case: `backup GITHUB` +
+   Expected: No backup is performed. Invalid github backup command details shown in status message as no authentication token is provided.
+
+.. Test case: `backup GITHUB invalidToken` +
+   Expected: Command is executed but error popup with "Could not save data to file" appears due to invalid auth token provided. Status bar updates to show backup failed.
+
+.. Test case: `backup service invalid invalid` +
+   Expected: No backup is performed. Invalid command details shown in status message with command usage.
+
+. Restore of data from local backup
+
+.. Prerequisites: `backup` command has been run before and all files are valid and exists in `preferences.json` +
+   Test case: `restore` +
+   Expected: Restore success status message is displayed. Local Restore notification is also created and shown to user
+
+.. Prerequisites: `backup` command has not been run before
+   Test case: `restore` +
+   Expected: Status message displayed to prompt user to first do a backup or set relevant backup file paths in `preferences.json`.
+
+.. Prerequisites: Certain backup file/s indicated in `preferences.json` has been deleted. +
+   Test case: `restore` +
+   Expected: Status message displayed to prompt user to first do a backup or set relevant backup file paths in `preferences.json` and also check if all file paths are existing files.
+
+.. Prerequisites: `backup` command has been run before and all files are valid and exists in `preferences.json` +
+   Test case: `restore INVALID` +
+   Expected: No restore is performed. Invalid online service or command details shown in status message with command usage.
+
+. Restore of data from online backup
+
+.. Prerequisites: Online backup command has been run before and all gist ids in `preferences.json` are valid +
+   Test case: `restore GITHUB` +
+   Expected: Success status message displayed. Notification is created and shown to user about successful online restore.
+
+.. Prerequisites: Online backup command has not been run before +
+   Test case: `restore GITHUB` +
+   Expected: Status message displayed to prompt user to first do an online backup or set relevant backup gist ids in `preferences.json`.
+
+.. Prerequisites: Certain backup gists who's ids are indicated in `preferences.json` has been deleted.
+   Test case: `restore GITHUB` +
+   Expected: Error popup will appear for said data books. While any valid gists will still be restored, no success notification will be showed, however, status message will show restore succeeded as long as one of the book gists are valid and exists.
+
+.. Prerequisites: All backup gists who's ids are indicated in `preferences.json` has been deleted.
+   Test case: `restore GITHUB` +
+   Expected: Error popup will appear for all data books. Status message will show restore failed.
+
+** Prerequisites: Online backup command has been run before and all gist ids in `preferences.json` are valid +
+   Test case: `restore GITHUB VALID_AUTH_TOKEN` +
+   Expected: No restore is performed. Invalid command status message is shown to user with correct usage.
+// end::manualTestBackupRestore[]
+//@@author QzSG

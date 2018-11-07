@@ -60,4 +60,7 @@ include::../UserGuide.adoc[tag=databackup]
 
 include::../DeveloperGuide.adoc[tag=backuprestore]
 
-include::../DeveloperGuide.adoc[tag=dataencryption]
+**************************************************
+* Note: Manual Testing portion below
+**************************************************
+include::../DeveloperGuide.adoc[tag=manualTestBackupRestore]
