@@ -133,12 +133,7 @@ public class ModelManager extends ComponentManager implements Model {
         raise(new AddressBookChangedEvent(versionedAddressBook));
         raise(new NewResultAvailableEvent(message));
     }
-
-    /** Raises an event to indicate the request to backup model to persistent storage*/
-    private void indicateAddressBookBackupRequest() {
-        raise(new AddressBookLocalBackupEvent(versionedAddressBook, userPrefs.getAddressBookBackupFilePath()));
-    }
-
+    
     //@@author
 
     @Override
@@ -386,11 +381,13 @@ public class ModelManager extends ComponentManager implements Model {
         raise(new TaskBookChangedEvent(versionedTaskBook));
     }
 
+    //@@author QzSG
     private void indicateTaskBookChanged(String message) {
         raise(new TaskBookChangedEvent(versionedTaskBook));
         raise(new NewResultAvailableEvent(message));
     }
-
+    //@@author
+    //@@author luhan02
     @Override
     public boolean hasTask(Task task) {
         requireNonNull(task);
@@ -500,11 +497,6 @@ public class ModelManager extends ComponentManager implements Model {
         raise(new NewResultAvailableEvent(message));
     }
 
-    /** Raises an event to indicate the request to backup model to persistent storage*/
-    private void indicateEventBookBackupRequest(Path backupPath) {
-        raise(new EventBookLocalBackupEvent(versionedEventBook, userPrefs.getEventBookBackupFilePath()));
-    }
-
     @Override
     public boolean equals(Object obj) {
         // short circuit if same object
@@ -541,11 +533,6 @@ public class ModelManager extends ComponentManager implements Model {
     private void indicateExpenseBookChanged(String message) {
         raise(new ExpenseBookChangedEvent(versionedExpenseBook));
         raise(new NewResultAvailableEvent(message));
-    }
-
-    /** Raises an event to indicate the request to backup model to persistent storage*/
-    private void indicateExpenseBookBackupRequest(Path backupPath) {
-        raise(new ExpenseBookLocalBackupEvent(versionedExpenseBook, userPrefs.getExpenseBookBackupFilePath()));
     }
 
     //@@author ChenSongJian
