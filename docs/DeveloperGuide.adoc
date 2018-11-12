@@ -1357,7 +1357,7 @@ Use case ends.
 +
 Use case ends.
 
-//@@author 
+//@@author
 //@@author ian-tjahjono
 // tag::events[]
 [discrete]
