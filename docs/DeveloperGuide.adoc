@@ -1075,6 +1075,16 @@ Priorities: High (must have) - `* * \*`, Medium (nice to have) - `* \*`, Low (un
 |Priority |As a ... |I want to ... |So that I can...
 |`* * *` |new user |see usage instructions |refer to instructions when I forget how to use the App
 
+|`* * *` |user |add a new person |
+
+|`* * *` |user |edit a person | so that I can update a person's details
+
+|`* * *` |user |delete a person |remove entries that I no longer need
+
+|`* * *` |user |find a person by name |locate details of persons without having to go through the entire list
+
+|`* *` |user |hide <<private-contact-detail,private contact details>> by default |minimize chance of someone else seeing them by accident
+
 |`* * *` |user |add a new task | track the tasks
 
 |`* * *` |user |list the tasks | view all the tasks available
@@ -1455,8 +1465,18 @@ Cons:
 * No power user friendly features like in built console based commands
 * Not free, good features are premium only
 * Not open source.
+
+Reasons why Student Planner is better:
+
+* We incorporate the popular features in EverNote such as events and tasks into our existing contacts feature
+ and also added expenses tracking so that we fit our mission of being a one stop management app for your user.
+* Our application works using text commands so that power users used to a console application can be more efficient
+when using Student Planner, saving time.
+* Student Planner is completely open source, our savvy target users can contribute and add more features if they want to which benefits all users.
+* Student Planner is completely free.
 // end::evernotesurvey[]
 //@@author
+
 [appendix]
 // tag::manualTestHeading[]
 == Instructions for Manual Testing
