@@ -1620,6 +1620,7 @@ _{ more test cases ... }_
 .. Test case: `backup service invalid invalid` +
    Expected: No backup is performed. Invalid command details shown in status message with command usage.
 // end::manualTestBackup[]
+
 // tag::manualTestRestore[]
 === Restore of data
 . Restore of data from local backup
